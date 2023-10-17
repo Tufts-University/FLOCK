@@ -194,9 +194,10 @@ best_fit2 <- brm(stx_score ~ vel_ent_whole + doct_vel_ratio_whole,
                prior=prior, # weakly informative priors
                backend = "cmdstanr",
                seed = 8675309,
-               refresh = 0,
+               iter = 4000,
                cores = 4,
-               chains = 4)
+               chains = 4,
+               control = list(adapt_delta = 0.99999))
 toc()
 summary(best_fit2)
 pp_check(best_fit2, type = "dens_overlay", ndraws = 100)
@@ -213,7 +214,7 @@ ggplot(predictVsObs_train, aes(x = ...1, y = ...2)) +
   geom_point() + 
   geom_abline(intercept = 0, slope = 1) +
   labs(title = "Bayesian Projection Predictive Variable Selection with LOO-CV (TRAIN)",
-       subtitle = "stx_score ~ vel_ent_whole + voronoi_ratios_ent_whole",
+       subtitle = "stx_score ~ vel_ent_whole + doct_vel_ratio_whole",
        x = "stx_score", y = "pred stx_score") + 
   lims(x = c(-10,100), y = c(-10,100))+
   annotate(geom="text", x=25, y=60, label=paste("avg error: ",round(avgError_train,2),"%",sep=""), color="red")
@@ -222,7 +223,7 @@ ggplot(predictVsObs_test, aes(x = ...1, y = ...2)) +
   geom_point() + 
   geom_abline(intercept = 0, slope = 1) +
   labs(title = "Bayesian Projection Predictive Variable Selection with LOO-CV (TEST)",
-       subtitle = "stx_score ~ vel_ent_whole + voronoi_ratios_ent_whole",
+       subtitle = "stx_score ~ vel_ent_whole + doct_vel_ratio_whole",
        x = "stx_score", y = "pred stx_score") + 
   lims(x = c(0,100), y = c(0,100))+
   annotate(geom="text", x=25, y=60, label=paste("avg error: ",round(avgError_test,2),"%",sep=""), color="red")
