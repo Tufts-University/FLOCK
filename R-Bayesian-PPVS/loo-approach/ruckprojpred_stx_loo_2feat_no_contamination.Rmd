@@ -160,6 +160,7 @@ ggplot(predictVsObs, aes(x = obs, y = pred)) +
   lims(x = c(0,130), y = c(0,130))+
   annotate(geom="text", x=16, y=78, label=paste("Mean Error:",round(avgError,2),"%",sep=""), color="red")
 ```
+\newpage
 ```{r}
 # make formula list
 formula_list = c()
