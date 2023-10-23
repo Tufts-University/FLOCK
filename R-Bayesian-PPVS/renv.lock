@@ -2480,6 +2480,21 @@
       ],
       "Hash": "ceb5c2a59ba33d42d051285a3e8a5118"
     },
+    "polypoly": {
+      "Package": "polypoly",
+      "Version": "0.0.3",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R",
+        "ggplot2",
+        "reshape2",
+        "rlang",
+        "stats",
+        "tibble"
+      ],
+      "Hash": "453344e69830cf16a305dcb23a1d131d"
+    },
     "poorman": {
       "Package": "poorman",
       "Version": "0.2.6",
