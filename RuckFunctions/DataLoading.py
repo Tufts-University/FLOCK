@@ -28,7 +28,7 @@ def load_data(data_dir):
     # iterate over files in data directory
     for filename in os.listdir(data_dir):
 
-        # skip if any of these in filenam
+        # skip if any of these in filename
         if 'all' in filename: continue
         if 'RuckInfil' in filename: continue
         if 'UTM' in filename: continue
