@@ -16,7 +16,7 @@ def load_data(data_dir):
     From a data directory, load a list of all datasets
 
     Args:
-        data_dir (str): filepath wehre data is located
+        data_dir (str): filepath where data is located
 
     Returns:
         datasets (list): list of DataFrames, one for each dataset
@@ -33,10 +33,10 @@ def load_data(data_dir):
         if 'RuckInfil' in filename: continue
         if 'UTM' in filename: continue
 
-        # get load and append this dataset
+        # load and append this dataset
         file = os.path.join(data_dir, filename)
         data = pd.read_csv(file).dropna()
-        data.attrs['name'] = filename.split('_')[2]
+        data.attrs['name'] = filename#.split('_')[2]
         datasets.append(data)
 
     return datasets
@@ -60,12 +60,12 @@ def pivot_datsets(datasets):
     # loop through datasets
     for dataset in datasets:
 
-        # for some reason, one of the soldiers in PLT1SQ3 was duplicated in UTM data
+        # for some reason, one of the members in one squad was duplicated (in only UTM data)
         if dataset.duplicated().any():
             dataset = dataset[~dataset.duplicated()]
         
         # pivot dataset
-        new_df = pd.pivot(dataset, columns='MASTRE_ID', index='time')
+        new_df = pd.pivot(dataset, columns='Member_ID', index='time')
 
         # add name attr to df
         new_df.attrs['name'] = dataset.attrs['name']
