@@ -24,28 +24,24 @@ import os
 
 
 
-def cluster_for_separation(datasets, UTM=True, method=None, epsilon=None):
+def cluster_for_separation(datasets, UTM=True, method='HDBSCAN', epsilon=10, min_cluster_size = 2):
     """
     CLuster the data for separation metrics, using teh clustering method of choice
 
     Args:
         datasets (list): list of movement period DataFrames
         UTM (bool, optional): True if using UTM data, false if GPS data. Defaults to True.
-        method (clustering method (DBSCAN or HDBSCAN), optional): clustering method. Defaults to None.
-        epsilon (float, optional): epsilon for clustering method, if applicable. Defaults to None.
+        method (string ('DBSCAN' or 'HDBSCAN'), optional): clustering method. Defaults to 'HDBSCAN'.
+        epsilon (float, optional): epsilon for clustering method, if applicable. This is the threshold distance for clusters to be separated, preventing micro-cluistering Defaults to 10.
+        min_cluster_size(int, optional): minimum number of points to be considered a cluster. Clusters with less than this number will be considered outliers. Defaults to 2.
 
+        
     Returns:
         _type_: _description_
         all_inertias (list) : list of dataframes with cluster membership probabilities for each soldier, if method = 'HDBSCAN'
         all_labels: (list): list of dataframes with cluster labels for each soldier at each timepoint
         all_scores (list): list of series the silouette scores for each timepoint
     """
-    '''
-    find 2 k-means clusters each timepoint
-    threshold separation metric and find where quads are split
-
-    if this doesnt work then use another clustering metric as well and threshold both
-    '''
 
     print('Extracting separation metrics')
 
@@ -106,7 +102,7 @@ def cluster_for_separation(datasets, UTM=True, method=None, epsilon=None):
                 if method == 'HDBSCAN':
                     
                     # initialize model
-                    fitted = HDBSCAN(min_cluster_size=2, allow_single_cluster=True,
+                    fitted = HDBSCAN(min_cluster_size=min_cluster_size, allow_single_cluster=True,
                                     cluster_selection_epsilon=epsilon, min_samples=2, )
                     
                     # fit to data
@@ -119,7 +115,7 @@ def cluster_for_separation(datasets, UTM=True, method=None, epsilon=None):
                 elif method == 'DBSCAN':
                     
                     # initialize model
-                    fitted = DBSCAN(eps = epsilon, min_samples = 2, )
+                    fitted = DBSCAN(eps = epsilon, min_samples = min_cluster_size, )
 
                     # fit to data
                     fitted.fit(points)

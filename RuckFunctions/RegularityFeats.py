@@ -67,7 +67,7 @@ def PACS_entropy(ruck_slices_oriented, names):
 
 def VAR_model(ruck_slices_oriented, names, time_window = 100, resid = False):
     """
-    an vector autoregressive model for each soldier in their PACS coord system
+    a vector autoregressive model for each soldier in their PACS coord system
 
     Args:
         ruck_slices_oriented (list): list of PACS oriented dataset dfs
@@ -205,10 +205,12 @@ def VARX_model(ruck_slices_oriented, names, time_window = 100, resid = False):
 
 def time_series_metric_entropy(metric, range=[-10,10], bins=100):
     """
-    Get an entropy value from time-series metrics extracted from the GPS data
+    Get an approximate entropy value from time-series metrics extracted from the GPS data
     Most metrics are in a list of dataframes, one for each movement period
 
-    Get Entropy for each movement period and return the average
+    Get Approximate Entropy for each movement period and return the average
+
+    Customize range and bin count          
 
     Args:
         metric (list): list of DataFrames that include a metric over time for each individual
