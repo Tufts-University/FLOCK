@@ -11,7 +11,7 @@ from sklearn.cluster import KMeans, DBSCAN
 # from sklearn.neighbors import KNeighborsClassifier
 from sklearn.metrics import silhouette_score
 import math
-from tqdm import tqdm
+from tqdm.notebook import tqdm
 import numpy as np
 from kneed.knee_locator import KneeLocator
 import plotly.express as px
@@ -157,98 +157,48 @@ def cluster_for_separation(datasets, UTM=True, method='HDBSCAN', epsilon=10, min
 
 
 
-def DBSCAN_for_separation(datasets):
+
+def get_outlier_time(all_labels):
     '''
-    find 2 k-means clusters each timepoint
-    threshold separation metric and find where quads are split
-
-    if this doesnt work then use another clustering metric as well and threshold both
-    '''
-
-    print('Extracting separation metrics')
-
-    all_cores = []
-    all_labels = []
-    all_comps = []
-
-    # for data in tqdm(datasets):
-    for data in datasets:
-
-        # if 'PLT2SQ3' in data.attrs['name']:
-        
-        #     import pdb
-        #     pdb.set_trace()
-
-        names = []
-        for col in data.columns:
-            # names.append(col.split()[0])
-            names.append(col[1])
-        # get unique names and drop 'unnamed'
-        # names = [x for x in list(set(names)) if 'Unnamed:' not in x][1:]
-        if '' in names:
-            print('getting rid of empty name')
-            names = [x for x in list(set(names)) if 'Unnamed:' not in x][1:]
-        else:
-            names = [x for x in list(set(names)) if 'Unnamed:' not in x]
-
-        cores_data = []
-        labels_data = []
-        comps_data = []
-
-        # loop through timepoints and find the distance between 
-        data.dropna(inplace=True) # Drop the last timepoints if all soldiers not included            
-        # for idx in tqdm(data.index):
-        for idx in data.index:
-
-            # get points for kmeans
-            points=[]
-            for n in names:
-                # points.append([data[n+' longitude'][idx], data[n+' latitude'][idx]])
-                points.append([data['longitude', n][idx] *111139, data['latitude', n][idx] *111139])
-
-
-            # use DBSCAN here
-
-            clusts = DBSCAN(eps = 25, min_samples = 2)
-            clusts.fit(points)
-
-            cores_data.append(clusts.core_sample_indices_)
-            labels_data.append(clusts.labels_)
-            comps_data.append(clusts.components_)
-            
-
-            # distance = math.dist(fitted.cluster_centers_[0], fitted.cluster_centers_[1])
-            # groupsize = min(len(np.where(fitted.labels_)[0]), len(np.where(fitted.labels_-1)[0]))
-            # distances.append(distance)
-            # g_sizes.append(groupsize)
-
-        # separation_metrics.append(pd.Series(distances, name=ruck.attrs['name']))
-        # min_group_sizes.append(pd.Series(g_sizes, name=ruck.attrs['name']))
-
-        # import pdb
-        # pdb.set_trace()
-
-        # test = pd.DataFrame(labels_data, columns=names)
-
-        # import itertools
-        # marker = itertools.cycle(('v', '+', '.', 'o', '*', '1')) 
-
-        # for c in test.columns:
-        #     plt.plot(test[c], label=c, marker=next(marker))
-        
-        # plt.legend()
-        # plt.show()
-
-        all_cores.append(pd.Series(cores_data))
-        all_labels.append(pd.DataFrame(labels_data, columns=names))
-        all_comps.append(pd.Series(comps_data))
+    get the amount of time each soldier is an outlier
     
-    # fig = plt.figure() 
+    input: list of clustering label dfs for the movement periods
 
-    # for count, (separation, min_group) in enumerate(zip(separation_metrics, min_group_sizes)):
+    output: amount of time each soldier is considered an outlier (label = -1)
+
+    '''
+
+    outlier_times = []
+
+    # loop through movement periods
+    for labels in all_labels:
+
+        # if no outlier labels
+        if not -1.0 in labels.values:
+
+            # return 0 for all members
+            outlier_time = pd.Series([0]*len(labels.columns), index=labels.columns)
+
+            # rename output series
+            outlier_time.name = 'number of samples as outlier'
+
+            # append output to final list
+            outlier_times.append(outlier_time)
+
+        else:
+            # get a count for how many samples are '-1' for each individual
+            outlier_time = labels.apply(pd.value_counts).loc[-1].fillna(0)
+
+            # rename output series
+            outlier_time.name = 'number of samples as outlier'
+
+            # append output to final list
+            outlier_times.append(outlier_time)
+
+    return outlier_times
 
 
-    return all_cores, all_labels, all_comps
+
 
 
 
@@ -384,12 +334,12 @@ def make_cluster_gifs(prepped_clust_dfs):
 
         # sample plotly animated figure
         fig = px.scatter(df, x="X", y="Y", animation_frame="time (min)", animation_group="ID",
-                color="cluster", title=df.attrs['name']+"_"+str(count),
+                color="cluster", title=df.attrs['name']+"_"+str(count),)
                 # range_y=[df['Y'].min(), df['Y'].max()], range_x=[df['Y'].min(), df['Y'].max()],#, category_orders = np.arange(len(df.cluster.unique()))) 
                 #range_x=[df['X'].min(), df['X'].max()])
                 # error_x='X_max', error_x_minus='X_min', error_y='Y_max', error_y_minus='Y_min')
                 # error_x='X_err', error_y='Y_err', color_discrete_sequence=sns.color_palette(as_cmap=True))
-                marginal_x='box', marginal_y='box')
+                # marginal_x='box', marginal_y='box')
         fig.update_xaxes(scaleanchor="y", scaleratio=1, dtick=10)
         fig.update_yaxes(scaleanchor="x", scaleratio=1, dtick=10)
 
@@ -404,169 +354,36 @@ def make_cluster_gifs(prepped_clust_dfs):
             fig.layout.sliders[0].update(active=s)
             # generate image of current state
             frames.append(PIL.Image.open(io.BytesIO(fig.to_image(format="png", scale = 2))))
+
+        def animate(i):
+            fig.update(data=fig.frames[i].data)
+
         
         print('save plot')
 
         # create animated GIF
-        frames[0].save(
-                os.getcwd() + '\\Figures\\GIF_' + df.attrs['name']+"_"+str(count)+".gif",
-                save_all=True,
-                append_images=frames[1:],
-                optimize=True,
-                duration=90,
-                loop=0            
-            )
-        print('GIF saved to: ' + os.getcwd() + '\\Figures\\GIF_' + df.attrs['name']+"_"+str(count)+".gif")
+        # frames[0].save(
+        #         os.getcwd() + '\\Figures\\GIF_' + df.attrs['name']+"_"+str(count)+".gif",
+        #         save_all=True,
+        #         append_images=frames[1:],
+        #         optimize=True,
+        #         duration=90,
+        #         loop=0            
+        #     )
+        # print('GIF saved to: ' + os.getcwd() + '\\Figures\\GIF_' + df.attrs['name']+"_"+str(count)+".gif")
+
+        
+        # init FuncAnimation
+        ani = plt.animation.FuncAnimation(fig, animate, frames=fig.frames, interval=200)
+
+        from IPython.display import HTML
+        HTML(ani.to_jshtml())
+
 
     return None
 
 
 
-def get_group_names(ruck_slices, all_scores, all_labels):
-    '''
-    Get names of groups and outliers from cluster labels and non-nan sillouette scores
-    '''
-    # Identify and separate movement period groupings
-    outlier_names = []
-    grouped_names = []
-    for this_squad_ruck, scores, labels in zip(ruck_slices, all_scores, all_labels):
-        this_sq_groups = []
-        this_sq_outliers = []
-        for this_movement_period in this_squad_ruck:
-            # get labels for this period
-            # this_period_scores = scores[this_movement_period.index]
-            this_period_labels = labels.iloc[this_movement_period.index]
-            # find the most common groups
-            groups = []
-            for index, row in this_period_labels.iterrows():
-                groups.append([row_name for (x, row_name) in zip(row,row.index) if x == 0])
-                groups.append([row_name for (x, row_name) in zip(row,row.index) if x == 1]) 
-                groups.append([row_name for (x, row_name) in zip(row,row.index) if x == 2]) 
-                groups.append([row_name for (x, row_name) in zip(row,row.index) if x == 3]) 
-                groups.append([row_name for (x, row_name) in zip(row,row.index) if x == 4]) 
-            groups = [x for x in groups if x]
-            # count how many for each group
-            group_counts = defaultdict(int)
-            for group in groups:
-                group_str = '-'.join(sorted(group))  # sort the names to create a unique string for each group
-                group_counts[group_str] += 1
-            # sort by largest count
-            sorted_d = sorted(group_counts.items(), key=lambda x: x[1], reverse=True)
-
-            names = this_movement_period['longitude'].columns.to_list()
-            # labeled_names =[]
-            this_period_group = []
-            # Add cluster to this_sq_groups if together for at least 30% of movement period
-            for d in sorted_d:
-                if all(n in d[0].split('-') for n in names):
-                    continue
-                print(d)
-                if d[1]>(len(this_movement_period)/3):
-                    this_period_group.append(d[0].split('-'))
-
-                # this_period_group.append(d[0].split('-'))
-                # for x in d[0].split('-'):
-                #     labeled_names.append(x)
-                #     if len([n for n in names if n in labeled_names])==len(names):
-                #         break
-                # if len([n for n in names if n in labeled_names])==len(names):
-                #     break
-            this_sq_groups.append(this_period_group)
-        grouped_names.append(this_sq_groups)
-                        
-                
-
-
-
-
-        #     if len(np.where(this_period_scores.isna() == False)[0]) > len(this_period_scores)*0.3:
-        #         labels_during_split = this_period_labels[this_period_scores.isna() == False]
-        #         # ID groups
-        #         this_period_group = [sold for sold in labels_during_split if labels_during_split[sold].median()>0]
-        #         # group2 = [sold for sold in labels_during_split if not sold in group1]
-        #     this_sq_groups.append(this_period_group)
-        #     # find outliers
-        #     this_period_outliers = []
-        #     for this_soldier_labels in this_period_labels:
-        #         # find where outliers are marked (more than 30% of period)
-        #         if len(np.where(this_period_labels[this_soldier_labels] == -1)[0]) > len(this_period_scores)*0.3:
-        #             this_period_outliers.append(this_soldier_labels)
-        #     this_sq_outliers.append(this_period_outliers)
-        # outlier_names.append(this_sq_outliers)
-        # grouped_names.append(this_sq_groups)
-    
-    return grouped_names#, outlier_names
-
-
 
 if __name__ == '__main__':
-    # Initialize path to data
-    # data_dir = os.getcwd() + '\\Data\\csv'
-    # # Load datasets
-    # raw_datasets = load_data(data_dir)
-    # # Re-shape datasets
-    # datasets = pivot_datsets(raw_datasets)
-    # # Get centroids
-    # centroids = get_centroid(datasets)
-
-    # # for data in datasets:
-    # #     if 'PLT2SQ3' in data.attrs['name']:
-    # #         test = [data[:3000], data[5000:6000], data[7000:8000]]
-    # #         test[0].attrs['name'] = 'test'
-    # #         test[1].attrs['name'] = 'test'
-    # #         test[2].attrs['name'] = 'test'
-
-    # # cluster before re-orientation
-    # all_cores, all_labels, all_comps = DBSCAN_for_separation(datasets)
-
-    # # prepped_clust_dfs = prep_cluster_df(test, all_labels)
-
-    # # make_cluster_gifs(prepped_clust_dfs)
-
-    # # plt.plot(all_scores[0], label='silouette scores')
-    # # plt.hlines(.8, 0, 1000, label='threshold')
-    # # plt.legend()
-    # # plt.show()
-
-    # fig, ax = plt.subplots(len(all_labels),1) 
-    # for count, (labels, datas, timing_slices) in enumerate(zip(all_scores, datasets, ruck_slices)):
-    #     # for cnt, c in enumerate(labels.columns):
-    #     #     ax[count].plot(labels[c]+(0.1*cnt)-(.4))
-    #     ax[count].set_ylabel(datas.attrs['name'], rotation='vertical')
-    #     ax[count].plot(pd.DataFrame([l for l in labels]).mean(axis=1))
-    #     # ax[count].hlines([0.6], 0, len(labels))
-    #     ax[count].set_xticks(np.arange(len(labels))[::600], np.arange(len(labels))[::600]/60)
-    #     # ax[count].set_yticks([-1, 0, 1, 2], ['outlier', 'cluster 1', 'cluster 2', 'cluster 3'])
-    #     # ax[count].hlines([-1.5,-.5, .5, 1.5, 2.5], xmin=0, xmax=len(labels), ls='dotted', alpha=1)
-    #     # ax[count].fill_between(x=[0, len(labels)], y1=-1.5, y2=-.5, alpha=0.2, color='r')
-    #     # ax[count].fill_between(x=[0, len(labels)], y1=-.5, y2=.5, alpha=0.2, color='g')
-    #     # ax[count].fill_between(x=[0, len(labels)], y1=.5, y2=1.5, alpha=0.2, color='y')
-    #     for timings in timing_slices:
-    #         ax[count].fill_between(x=[timings.seconds.iloc[0], timings.seconds.iloc[-1]], y1=0, y2=1, alpha=.5, color='g')
-
-    # plt.show()
-
-    import pdb
-    pdb.set_trace()
-
-
-    # # plot_labeled_paths(centroids, datasets)
-    # # get slices for ruck periods
-    # ruck_slices, cent_slices = get_break_times(datasets, centroids, rest=False)
-    # # re-orient these ruck periods
-    # for cents, rucks in zip(cent_slices, ruck_slices):
-    #     # if 'PLT1SQ2' in rucks[0].attrs['name']:
-    #     # Orient ruck periods
-    #     ruck_slices_oriented, forward_angles_ruck = orient_geom(rucks, cents)
-    #     # norm_rest, _ = normalize_rest(rucks, cents)
-    #     # # Extract features from oriented ruck periods
-    #     # features = features_after_orientation(ruck_slices_oriented)
-    #     # prep dfs for plotting
-    #     ruck_oriented_prepped = prep_df(ruck_slices_oriented, decimate=10)
-    #     # ruck_oriented_prepped = prep_df(norm_rest)
-    #     # plot these dfs
-    #     import pdb
-    #     pdb.set_trace()
-    #     joint_subplots(ruck_oriented_prepped, rucks[0].attrs['name'], rucks, rest=False)
-    #     # make gifs
-    #     # make_gifs(ruck_oriented_prepped)
+    # Initialize 

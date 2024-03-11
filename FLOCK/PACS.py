@@ -11,9 +11,11 @@ import pandas as pd
 from tqdm import tqdm
 import math
 import random
-from scipy.interpolate import UnivariateSpline
+from scipy.interpolate import UnivariateSpline, splev, splprep
 from scipy.optimize import minimize
 from scipy.integrate import quad
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 
 
@@ -322,6 +324,212 @@ def PACS_transform(datasets, UTM=True):
     return oriented_datasets
 
 
+
+
+
+
+
+def plot_sample_PACS_figure(smooth_rucks, ruck_slices_oriented, random = True, time_length = 200):
+
+    # get group member names
+    names = smooth_rucks[0].latitude.columns.tolist()
+
+    # define colors for all plots 
+    color_dictionary = dict(zip(names, sns.color_palette(as_cmap=True)[:len(names)]))
+
+    if random:
+        # get random time periods
+        random_period = np.random.randint(len(ruck_slices_oriented))
+        random_timepoint = np.random.randint(len(ruck_slices_oriented[random_period])-time_length)
+    else:
+        random_period = 2
+        random_timepoint = 100
+    
+    # get section
+    random_slice = smooth_rucks[random_period].iloc[random_timepoint:random_timepoint+time_length]
+    random_PACS_slice = ruck_slices_oriented[random_period].iloc[random_timepoint:random_timepoint+time_length]
+
+    #  get a sample path
+    x_UTM = random_slice[[('UTM_x', n)for n in names]].mean(axis=1)
+    y_UTM = random_slice[[('UTM_y', n) for n in names]].mean(axis=1)
+
+    # Get equivalent PACS coordinates
+    # make straight line to represent forward movement
+    x_PACS = pd.Series(0 * np.arange(time_length))
+    y_PACS = pd.Series(np.arange(time_length))
+
+    # initialize indiv datasets list
+    indivs_data = []
+
+    # loop through individuals
+    for name in names:
+        this_person_data = random_PACS_slice[[c for c in random_PACS_slice.columns if name in c]]
+        this_person_data.columns = 'x', 'y'
+        this_person_data['ID']=name
+        indivs_data.append(this_person_data)
+
+    # concat list of indiv datasets to single group dataset
+    data_to_plot = pd.concat(indivs_data)
+
+    # initialize jointfig
+    jointfig = sns.jointplot(data=data_to_plot.reset_index(), x='x', y='y', hue='ID', dropna=True, palette = color_dictionary, linewidth=.2, joint_kws ={'s': 75})
+    jointfig.ax_joint.set_aspect('equal')
+
+    # jointfig params
+    plt.suptitle('PACS coordinates over ' +str(time_length)+ ' seconds')
+    jointfig.ax_joint.legend([])
+    jointfig.ax_joint.set_ylim([-15,25])
+    jointfig.ax_joint.set_xlim([-15,15])
+    plt.tight_layout()
+
+    # initialize random timepoint for UTM and PACS figs (should be middle of jointplots time-window)
+    random_timepoint = random_timepoint + time_length//2
+    sample_time_length = 40
+
+    # get section
+    random_slice = smooth_rucks[random_period].iloc[random_timepoint:random_timepoint+sample_time_length]
+    random_PACS_slice = ruck_slices_oriented[random_period].iloc[random_timepoint:random_timepoint+sample_time_length]
+
+    #  get a sample path
+    x_UTM = random_slice[[('UTM_x', n)for n in names]].mean(axis=1)
+    y_UTM = random_slice[[('UTM_y', n) for n in names]].mean(axis=1)
+
+    # Get equivalent PACS coordinates
+    # make straight line to represent forward movement
+    x_PACS = pd.Series(0 * np.arange(sample_time_length))
+    y_PACS = pd.Series(np.arange(sample_time_length))
+
+    # choose units (UTM or coords)
+    pts = pd.concat([x_UTM, y_UTM], axis=1).to_numpy()
+
+    # get distance values
+    distance = np.cumsum( np.sqrt(np.sum( np.diff(pts, axis=0)**2, axis=1 )) )
+    distance = np.insert(distance, 0, 0)#/distance[-1]
+
+    # make a spline for each axis
+    splines = [UnivariateSpline(distance, coords, k=3, s=50) for coords in pts.T]
+
+    # get evenly spaced points ~1 unit along spline
+    spaced_distance = np.arange(len(distance))
+    points_spaced = np.vstack( spl(spaced_distance) for spl in splines ).T
+
+    x_UTM = pd.Series(points_spaced[:,0])
+    y_UTM = pd.Series(points_spaced[:,1])
+
+    # set tick params
+    # set which tick to make as t=0
+    # make a ratio of total time period
+    ztick = sample_time_length//2
+
+    # tick distance from line and how many ticks
+    dist_from_line = 10
+    n_ticks = 2
+
+    # make paths with respect to zero (t=0)
+    x_UTM = x_UTM - x_UTM.iloc[int(ztick)]
+    y_UTM = y_UTM - y_UTM.iloc[int(ztick)]
+    x_PACS = x_PACS - x_PACS.iloc[int(ztick)]
+    y_PACS = y_PACS - y_PACS.iloc[int(ztick)]
+
+    # make plots
+    fig, axs = plt.subplots(1, 3)
+
+    axs[2] = jointfig.ax_joint
+
+    # loop through two plots. UTM and PACS
+    for x, y, ax, plottype in zip([x_UTM, x_PACS, x_PACS], [y_UTM, y_PACS, y_PACS], axs, ['UTM', 'PACS', 'joint']):
+
+        # set up curve
+        curve_df = pd.DataFrame()
+        curve_df['x'] = x
+        curve_df['y'] = y
+
+        # get normalized slope for y axis ticks
+        curve_diff = curve_df.diff()
+        curve_slope = curve_diff['y'] / curve_diff['x']
+        norm_slope = -1/curve_slope
+
+        # plot the path
+        if plottype == 'joint':
+            ax.plot(x, y, color='k', label='Path', alpha=0.2)
+            ar = ax.arrow(x.iloc[-1], y.iloc[-1],dx=x.diff().iloc[-1], dy=y.diff().iloc[-1], color='k', width=0.2, head_starts_at_zero = 1, alpha=0.2)
+        else:
+            ax.plot(x, y, color='k', label='Path')
+            ar = ax.arrow(x.iloc[-1], y.iloc[-1],dx=x.diff().iloc[-1], dy=y.diff().iloc[-1], color='k', width=0.2, head_starts_at_zero = 1)
+
+        # initialize x and y vals for ticks
+        X_vals = []
+        Y_vals = []
+
+        # plot every X ticks
+        evtick = 5
+
+        # plot ticks
+        for count, (this_x, this_y, this_slope) in enumerate(zip(x[::evtick], y[::evtick], norm_slope[::evtick])):
+            
+            # if slop is na skip
+            if math.isnan(this_slope): continue
+
+            # assign m as slope
+            m = this_slope
+
+            # loop through steps in path to plot ricks
+            for l in np.arange(0, dist_from_line/n_ticks + dist_from_line, dist_from_line/n_ticks)[1:]:
+
+                # ticks here
+                dx = (l / math.sqrt(1 + (m * m)))
+                dy = m * dx
+                Px = this_x + dx
+                Py = this_y + dy
+                Nx = this_x - dx
+                Ny = this_y - dy
+
+                # append ticks
+                X_vals = [Px, Nx]
+                Y_vals = [Py, Ny]
+
+                # make t=0 a darker tick, adjust alpha for PACS joint plot
+                if count == (ztick//evtick):
+                    if plottype == 'PACS':
+                        ax.plot(X_vals, Y_vals, color='k', marker = '.', markevery=1, label = 't = 0')
+                    if plottype == 'joint':
+                        ax.plot(X_vals, Y_vals, color='k', marker = '.', markevery=1, alpha = 0.2)
+                    else:
+                        ax.plot(X_vals, Y_vals, color='k', marker = '.', markevery=1)
+                else:
+                    if plottype == 'joint':
+                        ax.plot(X_vals, Y_vals, ls=':', color='b', marker = '.', markevery=1, alpha = 0.1)
+                    else:
+                        ax.plot(X_vals, Y_vals, ls=':', color='b', marker = '.', markevery=1, alpha = 0.3)
+                
+                if not l == dist_from_line/n_ticks:
+                    if plottype == 'joint': alpha=0.2
+                    else: alpha=1
+                    ax.text(X_vals[0] + 1 , Y_vals[0], f'{(count-4)*evtick} m', rotation = math.degrees(math.tanh(m)), alpha=alpha)
+
+                # set some plotting parameters to make all axes equal
+                ax.set_ylim([-17,25])
+                ax.set_xlim([-15,15])
+                ax.set_aspect('equal')#, adjustable="datalim")
+                if plottype =='UTM': ax.set_ylabel('meters (m)')
+                else: ax.set_yticklabels([])
+
+    # set size for scatterplots and jopint plots
+    dot_size = 75
+
+    # plot individuals on path at that time 0
+    axs[0].scatter(random_slice.iloc[int(ztick)][[('UTM_x', n)for n in names]] - random_slice.iloc[int(ztick)][[('UTM_x', n)for n in names]].mean(), random_slice.iloc[int(ztick)][[('UTM_y', n)for n in names]] - random_slice.iloc[int(ztick)][[('UTM_y', n)for n in names]].mean(), c = [color_dictionary[n] for n in names], s=dot_size)
+    axs[1].scatter(random_PACS_slice.iloc[int(ztick)][[n+' longitude' for n in names]], random_PACS_slice.iloc[int(ztick)][[n+' latitude' for n in names]], c = [color_dictionary[n] for n in names], s=dot_size)
+
+    # plot params
+    axs[0].set_title('UTM coordinates')
+    axs[1].set_title('PACS coordinates')
+    fig.set_size_inches(12, 7)
+    plt.tight_layout()
+    sns.despine()
+    plt.show()
+
+    return None
 
 
 
