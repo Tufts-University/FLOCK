@@ -3,12 +3,13 @@ For extracting features from oriented and segmented data
 
 Using different clustering methods and extracting features from each
 
+The dataset are assumed to be preprocessed 
+
 '''
 # imports 
 
 
-from sklearn.cluster import KMeans, DBSCAN
-# from sklearn.neighbors import KNeighborsClassifier
+from sklearn.cluster import DBSCAN
 from sklearn.metrics import silhouette_score
 import math
 from tqdm.notebook import tqdm
@@ -43,22 +44,18 @@ def cluster_for_separation(datasets, UTM=True, method='HDBSCAN', epsilon=10, min
         all_scores (list): list of series the silouette scores for each timepoint
     """
 
-    print('Extracting separation metrics')
-
     # initialize lists
     all_inertias = []
     all_labels = []
     all_scores = []
-    all_ks = []
 
     # loop through datasets
-    # for data in tqdm(datasets):
     for data in datasets:
 
-        # get na,es
+        # get names
         names = []
         for col in data.columns:
-            # names.append(col.split()[0])
+
             names.append(col[1])
         # get unique names and drop 'unnamed'
         if '' in names:
@@ -74,8 +71,6 @@ def cluster_for_separation(datasets, UTM=True, method='HDBSCAN', epsilon=10, min
         all_ks_data = []
 
         # loop through timepoints and find the distance between 
-        # data.dropna(inplace=True) # Drop the last timepoints if all soldiers not included            
-        # for idx in tqdm(data.index):
 
         for idx in data.index:
 
@@ -387,3 +382,4 @@ def make_cluster_gifs(prepped_clust_dfs):
 
 if __name__ == '__main__':
     # Initialize 
+    None

@@ -483,7 +483,7 @@ def get_slices(smoothed_datasets, datasets, UTM=True, plot=False):
 
 
 
-def get_slices_byArea(interp_datasets, plot=True):
+def get_slices_byArea(interp_datasets, plot=False):
     """
     Get stop periods where all group memebers are stopped within 100m for at least 120s 
     (0.833m/s is the reference defined slow walking speed)
@@ -494,7 +494,7 @@ def get_slices_byArea(interp_datasets, plot=True):
 
     Args:
         interp_datasets (list): list of dataframes with interpolated datasets
-        plot (bool, optional): True if tha map should be plotted. Defaults to True.
+        plot (bool, optional): True if tha map should be plotted and displayed (for jupyter notebooks). Defaults to False.
 
     Returns:
         move_slices (list): list of lists of movement period dataframes for each squad
@@ -507,8 +507,10 @@ def get_slices_byArea(interp_datasets, plot=True):
     rest_slices = []
     all_stops = []
 
+    print('Extracting movement periods')
+
     # loop through datasets
-    for data in interp_datasets:
+    for data in tqdm(interp_datasets):
         
         # change from str index to datetime index
         data.index = pd.to_datetime(data.index)
@@ -644,7 +646,6 @@ def get_slices_byArea(interp_datasets, plot=True):
             stop_slices_sq.append(data[break_start_buff:break_end_buff])
         
         
-    
         # insert beginning of recording for initial 'break_stop'
         # append end of recording for final 'break_start'
         break_stops.insert(0, data.index.min().to_pydatetime())
@@ -668,9 +669,8 @@ def get_slices_byArea(interp_datasets, plot=True):
 
         if plot:
             
+            # create folium map
             m = folium.Map(
-                # location = [42.49079459046541, -71.66046870896011],
-                location = [42.4942, -71.6582],
                 zoom_start=13.5,
                 tiles='OpenStreetMap',
                 width=1024,

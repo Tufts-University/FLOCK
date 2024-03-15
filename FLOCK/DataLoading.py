@@ -28,15 +28,16 @@ def load_data(data_dir):
     # iterate over files in data directory
     for filename in os.listdir(data_dir):
 
-        # skip if any of these in filename
-        if 'all' in filename: continue
-        if 'RuckInfil' in filename: continue
-        if 'UTM' in filename: continue
-
         # load and append this dataset
         file = os.path.join(data_dir, filename)
+
+        # dropna values (making them all the same length)
         data = pd.read_csv(file).dropna()
-        data.attrs['name'] = filename#.split('_')[2]
+
+        # name the dataframe
+        data.attrs['name'] = filename.split('.')[0]
+
+        # append the dataframe to final list
         datasets.append(data)
 
     return datasets
@@ -74,6 +75,28 @@ def pivot_datsets(datasets):
         new_dfs.append(new_df)
 
     return new_dfs
+
+
+def load_GPX_data(GPX_directory):
+
+    GPX_directory = open(r'C:\Users\James\Downloads\test_gpx.gpx')
+    gpx = gpxpy.parse(GPX_directory)
+
+    # Convert to a dataframe one point at a time.
+    points = []
+    for track in gpx.tracks:
+        for segment in track.segments:
+            for p in segment.points:
+                points.append({
+                    'time': p.time,
+                    'latitude': p.latitude,
+                    'longitude': p.longitude,
+                    'elevation': p.elevation,
+                })
+    df = pd.DataFrame.from_records(points)
+
+    return None
+
 
 
 

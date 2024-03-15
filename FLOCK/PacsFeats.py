@@ -58,13 +58,13 @@ def get_SEIs(ruck_slices_oriented, names):
 
 
 
-def get_neighbor_dists(ruck_slices_oriented, names):
+def get_neighbor_dists(move_slices_oriented, names):
     """
     Get distance to nearest neightbor
     both left/right and front/back (X and Y)
 
     Args:
-        ruck_slices_oriented (list): list of oriented dataset dfs
+        move_slices_oriented (list): list of oriented dataset dfs
         names (list): list of names
 
     Returns:
@@ -77,7 +77,7 @@ def get_neighbor_dists(ruck_slices_oriented, names):
     y_neighbors = []
 
     # loop through datasets
-    for df in ruck_slices_oriented:
+    for df in move_slices_oriented:
 
         # initialize dfs
         x_neighbors_df = pd.DataFrame()
