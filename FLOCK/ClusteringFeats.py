@@ -14,7 +14,6 @@ from sklearn.metrics import silhouette_score
 import math
 from tqdm.notebook import tqdm
 import numpy as np
-from kneed.knee_locator import KneeLocator
 import plotly.express as px
 from hdbscan import HDBSCAN
 import pandas as pd
@@ -192,8 +191,6 @@ def get_outlier_time(all_labels):
             outlier_times.append(outlier_time)
 
     return outlier_times
-
-
 
 
 

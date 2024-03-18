@@ -1,0 +1,79 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module FLOCK.PacsFeats</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="FLOCK.html"><font color="#ffffff">FLOCK</font></a>.PacsFeats</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:c%3A%5Cusers%5Cjames%5Cgitrepos%5Cgps-ruck%5Cflock%5Cpacsfeats.py">c:\users\james\gitrepos\gps-ruck\flock\pacsfeats.py</a></font></td></tr></table>
+    <p><tt>Functions&nbsp;for&nbsp;extracting&nbsp;features&nbsp;from&nbsp;the&nbsp;Path&nbsp;Adapted&nbsp;Coordinate&nbsp;System&nbsp;(PACS)&nbsp;transformed&nbsp;data<br>
+&nbsp;<br>
+Including&nbsp;spatial&nbsp;exploraion&nbsp;index,&nbsp;neighbor&nbsp;distance,&nbsp;and&nbsp;distribution&nbsp;consistency&nbsp;measures</tt></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="numpy.html">numpy</a><br>
+</td><td width="25%" valign=top><a href="pandas.html">pandas</a><br>
+</td><td width="25%" valign=top></td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#eeaa77">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Functions</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl><dt><a name="-LW_ratio"><strong>LW_ratio</strong></a>(movement_slices_oriented)</dt><dd><tt>get&nbsp;the&nbsp;length&nbsp;to&nbsp;width&nbsp;ratio<br>
+furthest&nbsp;separation&nbsp;front/back&nbsp;(length)&nbsp;divided&nbsp;by&nbsp;furthest&nbsp;separation&nbsp;side/side&nbsp;(width)<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;movement_slices_oriented&nbsp;(list):&nbsp;list&nbsp;of&nbsp;oriented&nbsp;dataset&nbsp;dfs<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;LW_ratios&nbsp;(list):&nbsp;list&nbsp;of&nbsp;L/W&nbsp;ratios&nbsp;over&nbsp;time&nbsp;for&nbsp;each&nbsp;movement&nbsp;period</tt></dd></dl>
+ <dl><dt><a name="-dist_consistency_Ftest"><strong>dist_consistency_Ftest</strong></a>(movement_slices_oriented, names)</dt><dd><tt>Measure&nbsp;the&nbsp;consistency&nbsp;of&nbsp;soldier&nbsp;positions&nbsp;across&nbsp;movement&nbsp;periods<br>
+F-test&nbsp;statistic&nbsp;as&nbsp;a&nbsp;metric&nbsp;for&nbsp;each&nbsp;soldier's&nbsp;oriented&nbsp;position&nbsp;consistency&nbsp;across&nbsp;movement&nbsp;periods<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;movement_slices_oriented&nbsp;(list):&nbsp;list&nbsp;of&nbsp;oriuented&nbsp;datasets&nbsp;as&nbsp;dfs<br>
+&nbsp;&nbsp;&nbsp;&nbsp;names&nbsp;(list):&nbsp;list&nbsp;of&nbsp;soldier&nbsp;names<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;X_ftest&nbsp;(Series):&nbsp;A&nbsp;series&nbsp;of&nbsp;F-statistic&nbsp;values&nbsp;for&nbsp;each&nbsp;soldier&nbsp;in&nbsp;the&nbsp;X&nbsp;axis<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Y_ftest&nbsp;(Series):&nbsp;A&nbsp;series&nbsp;of&nbsp;F-statistic&nbsp;values&nbsp;for&nbsp;each&nbsp;soldier&nbsp;in&nbsp;the&nbsp;Y&nbsp;axis</tt></dd></dl>
+ <dl><dt><a name="-dist_consistency_wasserstein"><strong>dist_consistency_wasserstein</strong></a>(movement_slices_oriented, names)</dt><dd><tt>get&nbsp;the&nbsp;wasserstein&nbsp;distance,&nbsp;a&nbsp;metric&nbsp;for&nbsp;each&nbsp;soldier's&nbsp;PACS&nbsp;location&nbsp;consistency&nbsp;across&nbsp;movement&nbsp;periods<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;movement_slices_oriented&nbsp;(list):&nbsp;oriented&nbsp;soldier&nbsp;positions&nbsp;for&nbsp;movement&nbsp;periods<br>
+&nbsp;&nbsp;&nbsp;&nbsp;names&nbsp;(list):&nbsp;list&nbsp;of&nbsp;names.<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;X_wass_df:&nbsp;(Series):&nbsp;average&nbsp;Wasserstein&nbsp;distance&nbsp;for&nbsp;each&nbsp;soldier&nbsp;in&nbsp;the&nbsp;X&nbsp;axis<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Y_wass_df:&nbsp;(Series):&nbsp;average&nbsp;Wasserstein&nbsp;distance&nbsp;for&nbsp;each&nbsp;soldier&nbsp;in&nbsp;the&nbsp;Y&nbsp;axis</tt></dd></dl>
+ <dl><dt><a name="-get_SEIs"><strong>get_SEIs</strong></a>(movement_slices_oriented, names)</dt><dd><tt>get&nbsp;the&nbsp;spatial&nbsp;explioration&nbsp;index&nbsp;for&nbsp;each&nbsp;soldier&nbsp;during&nbsp;each&nbsp;movement&nbsp;period&nbsp;from&nbsp;oriented&nbsp;data<br>
+SEI&nbsp;is&nbsp;considered&nbsp;the&nbsp;distance&nbsp;of&nbsp;a&nbsp;soldier&nbsp;from&nbsp;their&nbsp;own&nbsp;average&nbsp;location&nbsp;during&nbsp;a&nbsp;movement&nbsp;period<br>
+we&nbsp;include&nbsp;distances&nbsp;over&nbsp;the&nbsp;whole&nbsp;period,&nbsp;so&nbsp;that&nbsp;mean,&nbsp;max&nbsp;ect&nbsp;can&nbsp;be&nbsp;captured&nbsp;elsewhere<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;movement_slices_oriented&nbsp;(list):&nbsp;list&nbsp;of&nbsp;oriented&nbsp;dataset&nbsp;dfs<br>
+&nbsp;&nbsp;&nbsp;&nbsp;names&nbsp;(list):&nbsp;list&nbsp;of&nbsp;names<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;SEIs&nbsp;(list):&nbsp;list&nbsp;of&nbsp;dataframes&nbsp;with&nbsp;the&nbsp;individuals&nbsp;SEI&nbsp;(distance&nbsp;to&nbsp;their&nbsp;mean&nbsp;location)&nbsp;over&nbsp;time&nbsp;for&nbsp;each&nbsp;movement&nbsp;period</tt></dd></dl>
+ <dl><dt><a name="-get_neighbor_dists"><strong>get_neighbor_dists</strong></a>(move_slices_oriented, names)</dt><dd><tt>Get&nbsp;distance&nbsp;to&nbsp;nearest&nbsp;neightbor<br>
+both&nbsp;left/right&nbsp;and&nbsp;front/back&nbsp;(X&nbsp;and&nbsp;Y)<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;move_slices_oriented&nbsp;(list):&nbsp;list&nbsp;of&nbsp;oriented&nbsp;dataset&nbsp;dfs<br>
+&nbsp;&nbsp;&nbsp;&nbsp;names&nbsp;(list):&nbsp;list&nbsp;of&nbsp;names<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;x_neighbors&nbsp;(list):&nbsp;list&nbsp;of&nbsp;dfs&nbsp;with&nbsp;nearest&nbsp;neighbor&nbsp;distances&nbsp;in&nbsp;the&nbsp;X&nbsp;direction<br>
+&nbsp;&nbsp;&nbsp;&nbsp;y_neighbors&nbsp;(list):&nbsp;list&nbsp;of&nbsp;dfs&nbsp;with&nbsp;nearest&nbsp;neighbor&nbsp;distances&nbsp;in&nbsp;the&nbsp;Y&nbsp;direction</tt></dd></dl>
+</td></tr></table>
+</body></html>

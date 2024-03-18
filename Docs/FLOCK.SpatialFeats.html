@@ -1,0 +1,88 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module FLOCK.SpatialFeats</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="FLOCK.html"><font color="#ffffff">FLOCK</font></a>.SpatialFeats</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:c%3A%5Cusers%5Cjames%5Cgitrepos%5Cgps-ruck%5Cflock%5Cspatialfeats.py">c:\users\james\gitrepos\gps-ruck\flock\spatialfeats.py</a></font></td></tr></table>
+    <p><tt>Functions&nbsp;for&nbsp;extracting&nbsp;spatial&nbsp;features<br>
+&nbsp;<br>
+including&nbsp;centroid&nbsp;distance&nbsp;(stretch&nbsp;index),&nbsp;nearest&nbsp;neighbor,&nbsp;surface&nbsp;area&nbsp;(convex&nbsp;hull)&nbsp;and&nbsp;voronoi&nbsp;areas</tt></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="numpy.html">numpy</a><br>
+</td><td width="25%" valign=top><a href="pandas.html">pandas</a><br>
+</td><td width="25%" valign=top></td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#eeaa77">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Functions</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl><dt><a name="-get_cent_dist"><strong>get_cent_dist</strong></a>(movements, UTM=True)</dt><dd><tt>Get&nbsp;each&nbsp;soldier&nbsp;distance&nbsp;to&nbsp;the&nbsp;group's&nbsp;centroid<br>
+First&nbsp;step&nbsp;in&nbsp;calculating&nbsp;'Stretch&nbsp;Index',&nbsp;can&nbsp;also&nbsp;use&nbsp;for&nbsp;individual's&nbsp;'stretch'<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;movements&nbsp;(list):&nbsp;list&nbsp;of&nbsp;movement&nbsp;period&nbsp;DataFrames<br>
+&nbsp;&nbsp;&nbsp;&nbsp;UTM&nbsp;(bool,&nbsp;optional):&nbsp;True&nbsp;if&nbsp;using&nbsp;UTM&nbsp;data,&nbsp;false&nbsp;if&nbsp;GPS&nbsp;data.&nbsp;Defaults&nbsp;to&nbsp;True.<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;cent_dists&nbsp;(list):&nbsp;list&nbsp;of&nbsp;DataFrames&nbsp;for&nbsp;each&nbsp;movement&nbsp;period,&nbsp;with&nbsp;centroid-distance&nbsp;time-series&nbsp;for&nbsp;each&nbsp;soldier</tt></dd></dl>
+ <dl><dt><a name="-get_surface_area"><strong>get_surface_area</strong></a>(movements, UTM=True)</dt><dd><tt>Find&nbsp;the&nbsp;convex&nbsp;hull&nbsp;and&nbsp;calculate&nbsp;the&nbsp;surface&nbsp;area&nbsp;<br>
+Creates&nbsp;a&nbsp;time&nbsp;series&nbsp;of&nbsp;surface&nbsp;areas&nbsp;for&nbsp;that&nbsp;squad&nbsp;at&nbsp;each&nbsp;timepoint<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;movements&nbsp;(list):&nbsp;list&nbsp;of&nbsp;movement&nbsp;period&nbsp;DataFrames<br>
+&nbsp;&nbsp;&nbsp;&nbsp;UTM&nbsp;(bool,&nbsp;optional):&nbsp;True&nbsp;if&nbsp;using&nbsp;UTM&nbsp;data,&nbsp;false&nbsp;if&nbsp;GPS&nbsp;data.&nbsp;Defaults&nbsp;to&nbsp;True.<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;surface_areas&nbsp;(list):&nbsp;list&nbsp;of&nbsp;surface&nbsp;area&nbsp;time-series&nbsp;for&nbsp;movement&nbsp;periods</tt></dd></dl>
+ <dl><dt><a name="-get_voronoi_areas"><strong>get_voronoi_areas</strong></a>(movements, UTM=True)</dt><dd><tt>Get&nbsp;the&nbsp;area&nbsp;for&nbsp;each&nbsp;soldier'&nbsp;voronoi&nbsp;space&nbsp;inside&nbsp;of&nbsp;the&nbsp;group's&nbsp;convex&nbsp;hull<br>
+Both&nbsp;the&nbsp;raw&nbsp;area&nbsp;and&nbsp;the&nbsp;ration&nbsp;of&nbsp;individual&nbsp;area&nbsp;/&nbsp;total&nbsp;area<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;movements&nbsp;(list):&nbsp;list&nbsp;of&nbsp;movement&nbsp;period&nbsp;DataFrames<br>
+&nbsp;&nbsp;&nbsp;&nbsp;UTM&nbsp;(bool,&nbsp;optional):&nbsp;True&nbsp;if&nbsp;using&nbsp;UTM&nbsp;data,&nbsp;false&nbsp;if&nbsp;GPS&nbsp;data.&nbsp;Defaults&nbsp;to&nbsp;True.<br>
+&nbsp;<br>
+Raises:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;ValueError:&nbsp;Voronoi&nbsp;calculation&nbsp;Requires&nbsp;2D&nbsp;input<br>
+&nbsp;&nbsp;&nbsp;&nbsp;KeyError:&nbsp;Voronoi&nbsp;calculation&nbsp;can't&nbsp;handle&nbsp;NaN&nbsp;values<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;voronoi_areas&nbsp;(list):&nbsp;list&nbsp;of&nbsp;voronoi&nbsp;area&nbsp;time&nbsp;series&nbsp;for&nbsp;each&nbsp;movement&nbsp;period<br>
+&nbsp;&nbsp;&nbsp;&nbsp;voronoi_ratios&nbsp;(list):&nbsp;list&nbsp;of&nbsp;voronoi&nbsp;area&nbsp;ratio&nbsp;time&nbsp;series&nbsp;for&nbsp;each&nbsp;movement&nbsp;period</tt></dd></dl>
+ <dl><dt><a name="-neighbor_dists"><strong>neighbor_dists</strong></a>(movements, UTM=True)</dt><dd><tt>Get&nbsp;distance&nbsp;to&nbsp;nearest&nbsp;neighbor&nbsp;for&nbsp;each&nbsp;soldier<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;movements&nbsp;(list):&nbsp;list&nbsp;of&nbsp;movement&nbsp;period&nbsp;DataFrames<br>
+&nbsp;&nbsp;&nbsp;&nbsp;UTM&nbsp;(bool,&nbsp;optional):&nbsp;True&nbsp;if&nbsp;using&nbsp;UTM&nbsp;data,&nbsp;false&nbsp;if&nbsp;GPS&nbsp;data.&nbsp;Defaults&nbsp;to&nbsp;True.<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;dists&nbsp;(list):&nbsp;list&nbsp;of&nbsp;DataFrames&nbsp;for&nbsp;each&nbsp;movement&nbsp;period,&nbsp;with&nbsp;nearest&nbsp;neighbor&nbsp;distance&nbsp;time&nbsp;series&nbsp;for&nbsp;each&nbsp;soldier</tt></dd></dl>
+ <dl><dt><a name="-voronoi_finite_polygons_2d"><strong>voronoi_finite_polygons_2d</strong></a>(vor, radius=None)</dt><dd><tt>Reconstruct&nbsp;infinite&nbsp;voronoi&nbsp;regions&nbsp;in&nbsp;a&nbsp;2D&nbsp;diagram&nbsp;to&nbsp;finite<br>
+regions.<br>
+Parameters<br>
+----------<br>
+vor&nbsp;:&nbsp;Voronoi<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Input&nbsp;diagram<br>
+radius&nbsp;:&nbsp;float,&nbsp;optional<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Distance&nbsp;to&nbsp;'points&nbsp;at&nbsp;infinity'.<br>
+Returns<br>
+-------<br>
+regions&nbsp;:&nbsp;list&nbsp;of&nbsp;tuples<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Indices&nbsp;of&nbsp;vertices&nbsp;in&nbsp;each&nbsp;revised&nbsp;Voronoi&nbsp;regions.<br>
+vertices&nbsp;:&nbsp;list&nbsp;of&nbsp;tuples<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Coordinates&nbsp;for&nbsp;revised&nbsp;Voronoi&nbsp;vertices.&nbsp;Same&nbsp;as&nbsp;coordinates<br>
+&nbsp;&nbsp;&nbsp;&nbsp;of&nbsp;input&nbsp;vertices,&nbsp;with&nbsp;'points&nbsp;at&nbsp;infinity'&nbsp;appended&nbsp;to&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;end.</tt></dd></dl>
+</td></tr></table>
+</body></html>

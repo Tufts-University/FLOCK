@@ -1,0 +1,74 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module FLOCK.VelocityFeats</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="FLOCK.html"><font color="#ffffff">FLOCK</font></a>.VelocityFeats</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:c%3A%5Cusers%5Cjames%5Cgitrepos%5Cgps-ruck%5Cflock%5Cvelocityfeats.py">c:\users\james\gitrepos\gps-ruck\flock\velocityfeats.py</a></font></td></tr></table>
+    <p><tt>Functions&nbsp;for&nbsp;calculation&nbsp;of&nbsp;velocity&nbsp;<br>
+and&nbsp;functions&nbsp;for&nbsp;feature&nbsp;extraction&nbsp;related&nbsp;to&nbsp;that<br>
+&nbsp;<br>
+Including&nbsp;velocity&nbsp;over&nbsp;time,&nbsp;velocity&nbsp;differences&nbsp;over&nbsp;time&nbsp;within&nbsp;the&nbsp;group&nbsp;(max-min&nbsp;and&nbsp;varaince)</tt></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="numpy.html">numpy</a><br>
+</td><td width="25%" valign=top><a href="pandas.html">pandas</a><br>
+</td><td width="25%" valign=top></td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#eeaa77">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Functions</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl><dt><a name="-acc_corr"><strong>acc_corr</strong></a>(acc_dfs, names=None, time_window=30)</dt><dd><tt>get&nbsp;the&nbsp;correlation&nbsp;of&nbsp;acceleration&nbsp;across&nbsp;soldiers<br>
+&nbsp;<br>
+input:&nbsp;list&nbsp;of&nbsp;acceleration&nbsp;dfs&nbsp;for&nbsp;movement&nbsp;periods<br>
+&nbsp;<br>
+output:&nbsp;avearage&nbsp;over&nbsp;correlation&nbsp;matrix&nbsp;for&nbsp;each&nbsp;timepoint</tt></dd></dl>
+ <dl><dt><a name="-get_accel"><strong>get_accel</strong></a>(vel_dfs, names, UTM=True)</dt><dd><tt>Get&nbsp;acceleration&nbsp;from&nbsp;velocity&nbsp;datasets&nbsp;using&nbsp;another&nbsp;differencing<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;vel_dfs&nbsp;(list):&nbsp;list&nbsp;of&nbsp;velocity&nbsp;(first&nbsp;difference)&nbsp;DataFrames<br>
+&nbsp;&nbsp;&nbsp;&nbsp;names&nbsp;(list):&nbsp;list&nbsp;of&nbsp;solider&nbsp;names<br>
+&nbsp;&nbsp;&nbsp;&nbsp;UTM&nbsp;(bool,&nbsp;optional):&nbsp;True&nbsp;if&nbsp;using&nbsp;UTM&nbsp;data,&nbsp;false&nbsp;if&nbsp;GPS&nbsp;data.&nbsp;Defaults&nbsp;to&nbsp;True.<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;acc_dfs&nbsp;(list):&nbsp;DataFrames&nbsp;containing&nbsp;accelleration&nbsp;data</tt></dd></dl>
+ <dl><dt><a name="-get_vel_feats"><strong>get_vel_feats</strong></a>(vel_dfs)</dt><dd><tt>Get&nbsp;some&nbsp;velocity&nbsp;features&nbsp;from&nbsp;velocity&nbsp;datasets<br>
+Variance:&nbsp;how&nbsp;each&nbsp;soldiers&nbsp;velocity&nbsp;varies&nbsp;throughout&nbsp;each&nbsp;movement&nbsp;period<br>
+Difference:&nbsp;how&nbsp;different&nbsp;is&nbsp;the&nbsp;speed&nbsp;of&nbsp;the&nbsp;fastest&nbsp;soldier&nbsp;vs&nbsp;speed&nbsp;of&nbsp;slowest&nbsp;soldier<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;vel_dfs&nbsp;(list):&nbsp;list&nbsp;of&nbsp;velocity&nbsp;(first&nbsp;difference)&nbsp;DataFrames<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;vel_var&nbsp;(list):&nbsp;list&nbsp;of&nbsp;varainces&nbsp;for&nbsp;the&nbsp;velocity&nbsp;dataframe<br>
+&nbsp;&nbsp;&nbsp;&nbsp;vel_diff&nbsp;(list):&nbsp;list&nbsp;of&nbsp;max&nbsp;difference&nbsp;over&nbsp;time&nbsp;for&nbsp;soldier&nbsp;velocities</tt></dd></dl>
+ <dl><dt><a name="-get_velocities"><strong>get_velocities</strong></a>(smoothed_movements, names, UTM=True)</dt><dd><tt>Get&nbsp;velocities&nbsp;from&nbsp;smoothed&nbsp;datasets&nbsp;using&nbsp;the&nbsp;first&nbsp;difference<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;smoothed_movements&nbsp;(list):&nbsp;list&nbsp;of&nbsp;extra&nbsp;smooth&nbsp;DataFrames<br>
+&nbsp;&nbsp;&nbsp;&nbsp;names&nbsp;(list):&nbsp;list&nbsp;of&nbsp;individual's&nbsp;names<br>
+&nbsp;&nbsp;&nbsp;&nbsp;UTM&nbsp;(bool,&nbsp;optional):&nbsp;True&nbsp;if&nbsp;using&nbsp;UTM&nbsp;data,&nbsp;false&nbsp;if&nbsp;GPS&nbsp;data.&nbsp;Defaults&nbsp;to&nbsp;True.<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;vel_dfs&nbsp;(list):&nbsp;DataFrames&nbsp;of&nbsp;first&nbsp;differences&nbsp;from&nbsp;the</tt></dd></dl>
+ <dl><dt><a name="-vel_corr"><strong>vel_corr</strong></a>(vel_dfs, time_window=30)</dt><dd><tt>get&nbsp;the&nbsp;correlation&nbsp;of&nbsp;velocity&nbsp;across&nbsp;soldiers<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;vel_dfs&nbsp;(list&nbsp;of&nbsp;DataFrames):&nbsp;list&nbsp;of&nbsp;velosity&nbsp;DataFrames<br>
+&nbsp;&nbsp;&nbsp;&nbsp;time_window&nbsp;(int,&nbsp;optional):&nbsp;time&nbsp;window&nbsp;for&nbsp;calculating&nbsp;at&nbsp;velocity&nbsp;correlation.&nbsp;Defaults&nbsp;to&nbsp;30.<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;corr_dfs&nbsp;(list&nbsp;of&nbsp;DataFrames):&nbsp;list&nbsp;of&nbsp;dataframes&nbsp;with&nbsp;velocity&nbsp;correlation&nbsp;within&nbsp;the&nbsp;group&nbsp;over&nbsp;time</tt></dd></dl>
+</td></tr></table>
+</body></html>

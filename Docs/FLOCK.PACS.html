@@ -1,0 +1,88 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module FLOCK.PACS</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="FLOCK.html"><font color="#ffffff">FLOCK</font></a>.PACS</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:c%3A%5Cusers%5Cjames%5Cgitrepos%5Cgps-ruck%5Cflock%5Cpacs.py">c:\users\james\gitrepos\gps-ruck\flock\pacs.py</a></font></td></tr></table>
+    <p><tt>Path&nbsp;Adapted&nbsp;Coordinate&nbsp;System&nbsp;transformation&nbsp;functions</tt></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="math.html">math</a><br>
+<a href="numpy.html">numpy</a><br>
+</td><td width="25%" valign=top><a href="pandas.html">pandas</a><br>
+<a href="matplotlib.pyplot.html">matplotlib.pyplot</a><br>
+</td><td width="25%" valign=top><a href="random.html">random</a><br>
+<a href="seaborn.html">seaborn</a><br>
+</td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#eeaa77">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Functions</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl><dt><a name="-PACS_transform"><strong>PACS_transform</strong></a>(datasets, UTM=True)</dt><dd><tt>Transforming&nbsp;group&nbsp;location&nbsp;data&nbsp;into&nbsp;a&nbsp;path-adapted&nbsp;coordinate&nbsp;system<br>
+&nbsp;<br>
+Using&nbsp;the&nbsp;spline-smoothed&nbsp;trajectory&nbsp;path&nbsp;of&nbsp;the&nbsp;group,&nbsp;<br>
+we&nbsp;get&nbsp;the&nbsp;distance&nbsp;of&nbsp;the&nbsp;individual&nbsp;to&nbsp;the&nbsp;group's&nbsp;spline&nbsp;path&nbsp;(left&nbsp;or&nbsp;right)&nbsp;as&nbsp;the&nbsp;X&nbsp;coordinate<br>
+we&nbsp;then&nbsp;find&nbsp;the&nbsp;distance&nbsp;along&nbsp;the&nbsp;spline&nbsp;path&nbsp;from&nbsp;the&nbsp;location&nbsp;of&nbsp;the&nbsp;groups&nbsp;center&nbsp;to&nbsp;the&nbsp;individual's&nbsp;location&nbsp;as&nbsp;the&nbsp;new&nbsp;Y&nbsp;coordinate<br>
+&nbsp;<br>
+Developed&nbsp;by&nbsp;Dr.&nbsp;Eric&nbsp;Miller&nbsp;and&nbsp;James&nbsp;McIntyre&nbsp;for&nbsp;CABCS&nbsp;at&nbsp;Tufts&nbsp;University<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;datasets&nbsp;(list):&nbsp;list&nbsp;of&nbsp;dataset&nbsp;dfs&nbsp;to&nbsp;re-orient<br>
+&nbsp;&nbsp;&nbsp;&nbsp;UTM&nbsp;(bool,&nbsp;optional):&nbsp;True&nbsp;if&nbsp;UTM&nbsp;data,&nbsp;False&nbsp;if&nbsp;raw&nbsp;GPS.&nbsp;Defaults&nbsp;to&nbsp;True.<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;oriented_datasets&nbsp;(list):&nbsp;list&nbsp;of&nbsp;PACS&nbsp;oriented&nbsp;datasets&nbsp;in&nbsp;dfs</tt></dd></dl>
+ <dl><dt><a name="-dp2s"><strong>dp2s</strong></a>(t, sx, sy, x0, y0)</dt><dd><tt>Define&nbsp;the&nbsp;distance&nbsp;from&nbsp;point&nbsp;to&nbsp;spline<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;t&nbsp;(float):&nbsp;timepoint&nbsp;(normalized&nbsp;to&nbsp;1&nbsp;for&nbsp;spline)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;sx&nbsp;(scipy.UnivariateSpline&nbsp;object):&nbsp;spline&nbsp;of&nbsp;x<br>
+&nbsp;&nbsp;&nbsp;&nbsp;sy&nbsp;(scipy.UnivariateSpline&nbsp;object):&nbsp;spline&nbsp;of&nbsp;y<br>
+&nbsp;&nbsp;&nbsp;&nbsp;x0&nbsp;(float):&nbsp;x&nbsp;coordinate<br>
+&nbsp;&nbsp;&nbsp;&nbsp;y0&nbsp;(float):&nbsp;y&nbsp;coordinate<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;d&nbsp;(float):&nbsp;distance&nbsp;from&nbsp;point<br>
+&nbsp;&nbsp;&nbsp;&nbsp;g&nbsp;(float):&nbsp;gradient&nbsp;at&nbsp;point&nbsp;on&nbsp;spline</tt></dd></dl>
+ <dl><dt><a name="-force_converge"><strong>force_converge</strong></a>(t0, args4d)</dt><dd><tt>Force&nbsp;the&nbsp;minimization&nbsp;function&nbsp;used&nbsp;to&nbsp;converge&nbsp;on&nbsp;the&nbsp;nearest&nbsp;spline&nbsp;point<br>
+iterate&nbsp;100x&nbsp;before&nbsp;incrreasing&nbsp;(doubling)&nbsp;the&nbsp;tolerance<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;t0&nbsp;(int):&nbsp;initial&nbsp;guess<br>
+&nbsp;&nbsp;&nbsp;&nbsp;args4d&nbsp;(list):&nbsp;packaged&nbsp;parameters&nbsp;for&nbsp;the&nbsp;distance&nbsp;calculation&nbsp;[x&nbsp;spline,&nbsp;y&nbsp;spline,&nbsp;x&nbsp;coord,&nbsp;y&nbsp;coord]<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;rac&nbsp;(scipy.optimize._optimize.OptimizeResult&nbsp;object)&nbsp;:&nbsp;result&nbsp;of&nbsp;converged&nbsp;minimization&nbsp;problem</tt></dd></dl>
+ <dl><dt><a name="-plot_sample_PACS_figure"><strong>plot_sample_PACS_figure</strong></a>(smooth_movements, ruck_slices_oriented, random=True, time_length=200)</dt><dd><tt>Plot&nbsp;a&nbsp;sample&nbsp;image&nbsp;for&nbsp;the&nbsp;PACS&nbsp;transformation<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;smooth_movements&nbsp;(list&nbsp;of&nbsp;DataFrames):&nbsp;list&nbsp;of&nbsp;smoothed&nbsp;movement&nbsp;period&nbsp;dataframes&nbsp;(not&nbsp;oriented)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;ruck_slices_oriented&nbsp;(list&nbsp;of&nbsp;DataFrames):&nbsp;list&nbsp;of&nbsp;PACS&nbsp;oriented&nbsp;movement&nbsp;period&nbsp;dataframes<br>
+&nbsp;&nbsp;&nbsp;&nbsp;random&nbsp;(bool,&nbsp;optional):&nbsp;If&nbsp;True,&nbsp;choose&nbsp;a&nbsp;random&nbsp;movement&nbsp;period&nbsp;and&nbsp;random&nbsp;timepoint,&nbsp;otherwise&nbsp;use&nbsp;specified&nbsp;example&nbsp;timepoint.&nbsp;Defaults&nbsp;to&nbsp;True.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;time_length&nbsp;(int,&nbsp;optional):&nbsp;length&nbsp;of&nbsp;time&nbsp;for&nbsp;the&nbsp;PACS&nbsp;to&nbsp;plot&nbsp;as&nbsp;a&nbsp;2D&nbsp;histogram.&nbsp;Defaults&nbsp;to&nbsp;200.<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;None:&nbsp;None</tt></dd></dl>
+ <dl><dt><a name="-rotate"><strong>rotate</strong></a>(x, y, radians)</dt><dd><tt>rotates&nbsp;a&nbsp;point&nbsp;around&nbsp;the&nbsp;origin&nbsp;counterclockwise<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;x&nbsp;(float):&nbsp;original&nbsp;coordinate&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;y&nbsp;(float):&nbsp;original&nbsp;coordinate&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;radians&nbsp;(_type_):&nbsp;radians&nbsp;to&nbsp;be&nbsp;rotated<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;tuple&nbsp;(float,&nbsp;float):&nbsp;rotated&nbsp;X&nbsp;and&nbsp;Y&nbsp;coordinates</tt></dd></dl>
+</td></tr></table>
+</body></html>
