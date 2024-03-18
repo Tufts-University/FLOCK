@@ -23,7 +23,6 @@ The repository is organized as follows:
     
 * **Preprocessing.py**
   * Preprocessing functions such as outlier sample detection, interpolation of missing datapoints, path smothing and break detection for identifying movement periods
-  * 
     
 * **VelocityFeats.py**
   * Feature extraction functions for finding the velocity of each individual over time and features related to difference in velocities across group members
