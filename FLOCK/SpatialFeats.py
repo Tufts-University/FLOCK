@@ -1,5 +1,7 @@
 """
 Functions for extracting spatial features
+
+including centroid distance (stretch index), nearest neighbor, surface area (convex hull) and voronoi areas
 """
 
 
@@ -13,13 +15,13 @@ import pandas as pd
 
 
 
-def get_cent_dist(rucks, UTM=True):
+def get_cent_dist(movements, UTM=True):
     """
     Get each soldier distance to the group's centroid
     First step in calculating 'Stretch Index', can also use for individual's 'stretch'
 
     Args:
-        rucks (list): list of movement period DataFrames
+        movements (list): list of movement period DataFrames
         UTM (bool, optional): True if using UTM data, false if GPS data. Defaults to True.
 
     Returns:
@@ -29,8 +31,8 @@ def get_cent_dist(rucks, UTM=True):
     # intialize list
     cent_dists = []
 
-    # loop through movement periods (rucks)
-    for ruck in tqdm(rucks):
+    # loop through movement periods (movements)
+    for movement in tqdm(movements):
         
         # choose units
         if UTM:
@@ -41,15 +43,15 @@ def get_cent_dist(rucks, UTM=True):
             Y = 'latitude'
 
         # get centroid (mean)
-        cent = pd.concat([ruck[X].mean(axis=1), ruck[Y].mean(axis=1)], axis=1, keys=[X, Y])
+        cent = pd.concat([movement[X].mean(axis=1), movement[Y].mean(axis=1)], axis=1, keys=[X, Y])
 
         cent_dist = []
 
         # loop through soldiers
-        for name in ruck['longitude'].columns:
+        for name in movement['longitude'].columns:
 
             # get one soldiers's data
-            this_soldier = pd.concat([ruck[X,name], ruck[Y,name]], axis=1)
+            this_soldier = pd.concat([movement[X,name], movement[Y,name]], axis=1)
 
             # Get diff from cent
             this_soldier_dists = this_soldier-cent.values
@@ -64,7 +66,7 @@ def get_cent_dist(rucks, UTM=True):
         cent_dist_df = pd.concat(cent_dist, axis=1)
 
         # rename df
-        cent_dist_df.attrs['name'] = ruck.attrs['name']
+        cent_dist_df.attrs['name'] = movement.attrs['name']
 
         # append to list of distances
         cent_dists.append(cent_dist_df)
@@ -76,12 +78,12 @@ def get_cent_dist(rucks, UTM=True):
 
 
 
-def neighbor_dists(rucks, UTM=True):
+def neighbor_dists(movements, UTM=True):
     """
     Get distance to nearest neighbor for each soldier
 
     Args:
-        rucks (list): list of movement period DataFrames
+        movements (list): list of movement period DataFrames
         UTM (bool, optional): True if using UTM data, false if GPS data. Defaults to True.
 
     Returns:
@@ -100,22 +102,22 @@ def neighbor_dists(rucks, UTM=True):
         Y = 'latitude'
     
     # loop through movement periods
-    for ruck in rucks:
+    for movement in movements:
 
-        # init list for this ruck
-        ruck_nns = []
+        # init list for this movement
+        movement_nns = []
         
         # loop thorugh names
-        for name in ruck['longitude'].columns:
+        for name in movement['longitude'].columns:
             
             # init list for this soldier
             this_soldier_neighbors = []
             
             # get this soldiers locations
-            this_soldier = pd.concat([ruck[X, name], ruck[Y, name]], axis=1)
+            this_soldier = pd.concat([movement[X, name], movement[Y, name]], axis=1)
             
             # get other soldier locations
-            other_soldiers = [pd.concat([ruck[X, oth_name], ruck[Y, oth_name]], axis=1) for oth_name in ruck['longitude'].columns if not oth_name == name]
+            other_soldiers = [pd.concat([movement[X, oth_name], movement[Y, oth_name]], axis=1) for oth_name in movement['longitude'].columns if not oth_name == name]
             
             # loop through soldiers
             for oth_sold in other_soldiers:
@@ -136,10 +138,10 @@ def neighbor_dists(rucks, UTM=True):
             nearest_neighbors = pd.Series(all_neighbors.min(axis=1), name=name)
             
             # append this soldiers' nns to list
-            ruck_nns.append(nearest_neighbors)
+            movement_nns.append(nearest_neighbors)
         
-        # create df of all soldiers nns over time for this ruck
-        all_nearest_neighbors = pd.concat(ruck_nns, axis=1)
+        # create df of all soldiers nns over time for this movement
+        all_nearest_neighbors = pd.concat(movement_nns, axis=1)
         
         # append to final list
         dists.append(all_nearest_neighbors)
@@ -150,13 +152,13 @@ def neighbor_dists(rucks, UTM=True):
 
 
 
-def get_surface_area(rucks, UTM=True):
+def get_surface_area(movements, UTM=True):
     """
     Find the convex hull and calculate the surface area 
     Creates a time series of surface areas for that squad at each timepoint
 
     Args:
-        rucks (list): list of movement period DataFrames
+        movements (list): list of movement period DataFrames
         UTM (bool, optional): True if using UTM data, false if GPS data. Defaults to True.
 
     Returns:
@@ -166,8 +168,8 @@ def get_surface_area(rucks, UTM=True):
     # init list
     surface_areas = []
 
-    # loop through movement periods (rucks)
-    for ruck in tqdm(rucks):
+    # loop through movement periods (movements)
+    for movement in tqdm(movements):
         
         # Chose units 
         if UTM:
@@ -180,10 +182,10 @@ def get_surface_area(rucks, UTM=True):
         # get surface area 
         SAs = []
 
-        # ruck.dropna(inplace=True)
+        # movement.dropna(inplace=True)
 
         # interate through timepoints
-        for _ , row in ruck.iterrows():
+        for _ , row in movement.iterrows():
             if row.isna().any():
                 SAs.append(np.nan)
             else:
@@ -191,7 +193,7 @@ def get_surface_area(rucks, UTM=True):
                 Hull = ConvexHull(points)
                 SAs.append(Hull.area)
         # make df of surface areas across time
-        SA_df = pd.DataFrame(SAs, columns=[ruck.attrs['name']], index=ruck.index)
+        SA_df = pd.DataFrame(SAs, columns=[movement.attrs['name']], index=movement.index)
     
         surface_areas.append(SA_df)
     
@@ -287,13 +289,13 @@ def voronoi_finite_polygons_2d(vor, radius=None):
 
 
 
-def get_voronoi_areas(rucks, UTM=True):
+def get_voronoi_areas(movements, UTM=True):
     """
     Get the area for each soldier' voronoi space inside of the group's convex hull
     Both the raw area and the ration of individual area / total area
 
     Args:
-        rucks (list): list of movement period DataFrames
+        movements (list): list of movement period DataFrames
         UTM (bool, optional): True if using UTM data, false if GPS data. Defaults to True.
 
     Raises:
@@ -310,8 +312,8 @@ def get_voronoi_areas(rucks, UTM=True):
     voronoi_areas = []
     voronoi_ratios = []
 
-    # loop through movement periods (rucks)
-    for ruck in tqdm(rucks):
+    # loop through movement periods (movements)
+    for movement in tqdm(movements):
         
         # Chose units 
         if UTM:
@@ -326,15 +328,15 @@ def get_voronoi_areas(rucks, UTM=True):
         VAs = []
         VRs = []
 
-        # ruck.dropna(inplace=True)
+        # movement.dropna(inplace=True)
 
-        for ix , row in ruck.iterrows():
+        for ix , row in movement.iterrows():
             # if any nan make all nan
             if row.isna().any():
-                VAs.append([np.nan]*len(ruck.latitude.columns))
-                VRs.append([np.nan]*len(ruck.latitude.columns))
+                VAs.append([np.nan]*len(movement.latitude.columns))
+                VRs.append([np.nan]*len(movement.latitude.columns))
             else:
-                points = [[row[X,S]-ruck[X].mean().mean(), row[Y,S]-ruck[Y].mean().mean()] for S in row[X].index]
+                points = [[row[X,S]-movement[X].mean().mean(), row[Y,S]-movement[Y].mean().mean()] for S in row[X].index]
 
                 points = np.array(points)
 
@@ -385,9 +387,9 @@ def get_voronoi_areas(rucks, UTM=True):
                 VRs.append(ratios)
 
         # Create dfs to return
-        VA_df = pd.DataFrame(VAs, columns=ruck.latitude.columns, index=ruck.index) 
+        VA_df = pd.DataFrame(VAs, columns=movement.latitude.columns, index=movement.index) 
         voronoi_areas.append(VA_df)
-        VR_df = pd.DataFrame(VRs, columns=ruck.latitude.columns, index=ruck.index) 
+        VR_df = pd.DataFrame(VRs, columns=movement.latitude.columns, index=movement.index) 
         voronoi_ratios.append(VR_df)
 
 

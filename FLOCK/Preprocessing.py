@@ -1,5 +1,7 @@
 '''
-functions for pre-processing ruck datasets
+functions for pre-processing movement datasets
+
+Including interpolation, smoothing and break detection
 '''
 
 
@@ -203,8 +205,6 @@ def get_centroid(datasets, UTM=True):
             # append this dataset's centroids to list
             cent_list.append(centroid_coords)
 
-
-
     return cent_list
 
 
@@ -261,8 +261,6 @@ def quarter_datasets_dist(interp_datasets, n_sections=4):
     centroids = get_centroid(interp_datasets)
 
     # get cumulative distance over time
-    # 
-
     def cumulative_distances(centroids):
         """
         get cumulative distance over time for splitting the dataset
@@ -326,174 +324,23 @@ def quarter_datasets_dist(interp_datasets, n_sections=4):
 
 
 
-
-
-def get_slices(smoothed_datasets, datasets, UTM=True, plot=False):
+def get_slices_byArea(interp_datasets, area_diameter=100, area_time=120, plot=False):
     """
-    Extract time-slices of movement and rest periods from the dataset
-    A 'Movement' slice is when below 1m/s velocity for 5 minutes or more 
-    A 'Rest' period is when above 1m/s velocity for 3 minutes or more as 'rest'
+    Get stop periods where all group memebers are stopped within [area_diameter] meters for at least [area_time] seconds
 
-    Args:
-        smoothed_datasets (list): list of extra smoothed DataFrames for velocity
-        datasets (list): list of smoothed DataFrames for slicing
-        UTM (bool, optional): True if UTM data, False if GPS data. Defaults to True.
-        plot (bool, optional): True if plotting break times. Defaults to False.
-
-    Returns:
-        ruck_slices (list): a list of 'movement' period slices as datasets
-        rest_slices (list): a list of 'rest' period slices as datasets
-    """
-
-    # init list of squad speeds
-    squads_diffs = []
-
-    # loop through datasets
-    for count, dataset in enumerate(tqdm(smoothed_datasets)):
-
-        # reset index (seconds rather than timestamp)
-        if 'timestamp' not in dataset.columns:
-            dataset.reset_index(inplace=True, names='timestamp')
-            dataset.reset_index(inplace=True, names='seconds')
-        
-        # get names
-        names = dataset['longitude'].columns
-
-        # init list of soldier speeds for this dataset
-        soldier_diffs = []
-
-        # get the absolute first difference (velocity magnitude)
-        for name in names: 
-            # if not UTM change units
-            if UTM:
-                soldier_diff_x = dataset['UTM_x',name] .rolling(10).mean().diff().abs()
-                soldier_diff_y = dataset['UTM_y', name].rolling(10).mean().diff().abs()
-                soldier_diff = np.sqrt(soldier_diff_x**2 + soldier_diff_y**2)
-            else:
-                soldier_diff_x = dataset['longitude',name].rolling(10).mean().diff().abs()
-                soldier_diff_y = dataset['latitude', name].rolling(10).mean().diff().abs()
-                soldier_diff = np.sqrt(soldier_diff_x**2 + soldier_diff_y**2) *111139 
-            soldier_diffs.append(soldier_diff)
-
-        # concat list of soldiers first diffs, take average
-        # make all nan 1.1 because of bug where some soldiers have all nan values in UTM
-        soldiers_diffs = pd.concat(soldier_diffs, axis=1, keys=names).replace({np.nan:1.1})#.median(axis=1)
-
-        # append to list of squad diffs
-        squads_diffs.append(soldiers_diffs)
-
-
-    print('Extracting break times')
-
-    # time threshold for movement and rest
-    # if rest:
-    rest_time_threshold = 2 *60 # 2 minutes for rest
-    # else:
-    ruck_time_threshold = 2 *60 # 5 minutes for movement
-    
-    # init lists of slices
-    ruck_slices = []
-    rest_slices = []
-
-    # loop through first differences of movement periods
-    for squadiff, dataset in zip(squads_diffs, datasets):
-
-        # init ruck slices list
-        single_slices = []
-
-        # get bool val for rest and ruck slices, where all soldiers below 1 m/s
-        ruck_bool_val = (squadiff > 0.82).all(axis=1)
-        rest_bool_val = ~ruck_bool_val
-
-        # use find objects to find slices of consecutive True
-        slices = find_objects(label(ruck_bool_val)[0])
-
-        # loop through slices
-        for slice1 in slices:
-            slice1 = slice1[0]
-
-            # get length of slice
-            length = slice1.stop - slice1.start
-
-            # if long enough slice, append to list
-            if length > ruck_time_threshold:
-                # extract the slice of data
-                this_data_slice = dataset[slice1]
-                # trim the slice to ensure mvoement or rest
-                trim = 30
-                trimmed_slice = this_data_slice[trim:-trim]
-                # set dataframe name attr
-                trimmed_slice.attrs['name'] = dataset.attrs['name']
-                # append this slice
-                single_slices.append(trimmed_slice)
-        # append all slives
-        ruck_slices.append(single_slices)
-        
-        # do the same as above but for rest
-        single_slices = []
-        slices = find_objects(label(rest_bool_val)[0])
-        for slice1 in slices:
-            slice1 = slice1[0]
-            length = slice1.stop - slice1.start
-            if length > rest_time_threshold:
-                this_data_slice = dataset[slice1]
-                trim = 15
-                trimmed_slice = this_data_slice[trim:-trim]
-                trimmed_slice.attrs['name'] = dataset.attrs['name']
-                single_slices.append(trimmed_slice)
-        rest_slices.append(single_slices)
-
-    # plot the break times if plot is True
-    if plot:
-        
-        fig, ax = plt.subplots(len(datasets),1, figsize=(10,10))
-
-        print('Plotting break times')
-
-        # loop through first differences of squads
-        for count, (rests, rucks, dataset, sq_diff) in enumerate(zip(rest_slices, ruck_slices, datasets, squads_diffs)):
-
-            # get rest timestamps
-            rest_timestamps = pd.concat([r.index.to_series() for r in rests])
-            ruck_timestamps = pd.concat([r.index.to_series() for r in rucks])
-
-            # plot soldier times
-            ax[count].plot(sq_diff) 
-            max_lim = sq_diff.max().max()
-            max_lim = 3
-            # ax[count].fill_between(soldiers_diffs.index, 0,max_lim, where=(soldiers_diffs <= 1).all(axis=1) , color='red', alpha=0.5, transform=ax[count].get_xaxis_transform())
-            ax[count].fill_between(sq_diff.index, 0,max_lim, where=pd.Series([x in rest_timestamps for x in dataset.index.to_series()]) , color='red', alpha=0.5, transform=ax[count].get_xaxis_transform())
-            ax[count].fill_between(sq_diff.index, 0,max_lim, where=pd.Series([x in ruck_timestamps for x in dataset.index.to_series()]) , color='green', alpha=0.5, transform=ax[count].get_xaxis_transform())
-            ax[count].set_ylim([0,max_lim])
-            ax[count].set_ylabel(dataset.attrs['name'], rotation='vertical')
-            ax[count].hlines(0.82, 0, 1)
-            # import pdb
-            # pdb.set_trace()
-            ax[count].set_xticks(np.arange(len(dataset.index))[::900], [x[11:16] for x in dataset.index.to_series()[::900].values])
-
-        fig.suptitle('Where all soldiers below 1 m/s for at least 2 minutes')
-        fig.tight_layout()
-        # plt.show()
-        fig.savefig(os.getcwd() + '\\Figures\\RestTest.png')
-        plt.close('all')
-
-
-    return ruck_slices , rest_slices
-
-
-
-
-def get_slices_byArea(interp_datasets, plot=False):
-    """
-    Get stop periods where all group memebers are stopped within 100m for at least 120s 
+    For our sample data (humans walking) we use 100 meters and 120 seconds
     (0.833m/s is the reference defined slow walking speed)
+
     Using MovingPandas stop detection for each individual 
-    Finding overlapping stops that include the whole group
+    
+    Then finding overlapping stops that include the whole group
 
     returns movement periods, rest periods and all stop information (for finding pre/post dynamics)
 
     Args:
         interp_datasets (list): list of dataframes with interpolated datasets
+        area_diameter (int): The diameter (in meters) for the 'stop area' beign detected. Defaults to 100.
+        area_time (int): The amount of time (in seconds) an individual should be in an area_diameter sized place to consider it a stop spot. Defaults to 120.
         plot (bool, optional): True if tha map should be plotted and displayed (for jupyter notebooks). Defaults to False.
 
     Returns:
@@ -543,7 +390,7 @@ def get_slices_byArea(interp_datasets, plot=False):
 
         # detect stop points
         detector = TrajectoryStopDetector(tc)
-        stops = detector.get_stop_points(max_diameter = 100, min_duration = timedelta(seconds=120))
+        stops = detector.get_stop_points(max_diameter = area_diameter, min_duration = timedelta(seconds=area_time))
 
         # find unique overlapping stop points that include all soldiers
 
@@ -700,101 +547,159 @@ def get_slices_byArea(interp_datasets, plot=False):
 
 
 
-# def get_break_times(datasets, centroids, rest=False, UTM=False):
-#     '''
-#     find break times. Used for segmenting datasets into periods of movement
+def get_slices(smoothed_datasets, datasets, UTM=True, plot=False):
+    """
+    Extract time-slices of movement and rest periods from the dataset
+    A 'Movement' slice is when below 1m/s velocity for 5 minutes or more 
+    A 'Rest' period is when above 1m/s velocity for 3 minutes or more as 'rest'
 
-#     Use centroid .diff() to find timepoints 
+    This is not reccomended. Instead use get_slices_byArea for finding rest periodswith MovingPandas
 
-#     criteria: 
-#     Velocity below __ rate (average diff())
-#     No breaks for __ minutes prior
-#     No Break for __ minutes later
-#     Break lasts for __ minutes
+    Args:
+        smoothed_datasets (list): list of extra smoothed DataFrames for velocity
+        datasets (list): list of smoothed DataFrames for slicing
+        UTM (bool, optional): True if UTM data, False if GPS data. Defaults to True.
+        plot (bool, optional): True if plotting break times. Defaults to False.
 
-#     Maybe using forward angle (theta) information
+    Returns:
+        movement_slices (list): a list of 'movement' period slices as datasets
+        rest_slices (list): a list of 'rest' period slices as datasets
+    """
 
-#     if rest=True, we are extracting the rest periods, otherwise we are extracting movement periods
-#     '''
+    # init list of squad speeds
+    squads_diffs = []
 
-#     break_times = []
+    # loop through datasets
+    for count, dataset in enumerate(tqdm(smoothed_datasets)):
 
-#     fig, ax = plt.subplots(len(datasets),1, figsize=(5,10))
+        # reset index (seconds rather than timestamp)
+        if 'timestamp' not in dataset.columns:
+            dataset.reset_index(inplace=True, names='timestamp')
+            dataset.reset_index(inplace=True, names='seconds')
+        
+        # get names
+        names = dataset['longitude'].columns
 
-#     print('Plotting break times')
+        # init list of soldier speeds for this dataset
+        soldier_diffs = []
 
-#     centroid_diffs = []
+        # get the absolute first difference (velocity magnitude)
+        for name in names: 
+            # if not UTM change units
+            if UTM:
+                soldier_diff_x = dataset['UTM_x',name] .rolling(10).mean().diff().abs()
+                soldier_diff_y = dataset['UTM_y', name].rolling(10).mean().diff().abs()
+                soldier_diff = np.sqrt(soldier_diff_x**2 + soldier_diff_y**2)
+            else:
+                soldier_diff_x = dataset['longitude',name].rolling(10).mean().diff().abs()
+                soldier_diff_y = dataset['latitude', name].rolling(10).mean().diff().abs()
+                soldier_diff = np.sqrt(soldier_diff_x**2 + soldier_diff_y**2) *111139 
+            soldier_diffs.append(soldier_diff)
 
-#     for count, (centroid, dataset) in enumerate(zip(tqdm(centroids), datasets)):
-#         # reset index (seconds rather than timestamp)
-#         centroid.reset_index(drop=True, inplace=True)
-#         # # change units to meters rather than coordinates (rough)
-#         # centroid['longitude'] = centroid['longitude'] * 111139  * math.cos(centroid['latitude'].mean())
-#         # centroid['latitude']  = centroid['latitude']  * 111139
-#         # smooth the centroid
-#         smooth = 30
-#         centroid = centroid.rolling(smooth, center=True).mean()
-#         if UTM:
-#             centroid_diff = centroid.diff().abs().sum(axis=1)
-#         else:
-#             centroid_diff = centroid.diff().abs().sum(axis=1) *111139        
-#         centroid_diffs.append(centroid_diff)
-#         ax[count].plot(centroid_diff) 
-#         max_lim = centroid_diff.max().max()
-#         ax[count].fill_between(centroid.index, 0,max_lim, where=centroid_diff < 1, color='red', alpha=0.5, transform=ax[count].get_xaxis_transform())
-#         ax[count].set_ylim([0,max_lim])
-#         ax[count].set_ylabel(dataset.attrs['name'], rotation='vertical')
-#         ax[count].set_xticks(centroid.index.values[::1000], centroid.index.values[::1000]//60)
+        # concat list of soldiers first diffs, take average
+        # make all nan 1.1 because of bug where some soldiers have all nan values in UTM
+        soldiers_diffs = pd.concat(soldier_diffs, axis=1, keys=names).replace({np.nan:1.1})#.median(axis=1)
 
-#     fig.suptitle('Centroid diff (averaged over 30 seconds)')
-#     fig.tight_layout()
-#     fig.savefig(os.getcwd() + '\\Figures\\RestTest.png')
-#     plt.close('all')
+        # append to list of squad diffs
+        squads_diffs.append(soldiers_diffs)
 
-#     print('Extracting break times')
 
-#     # time threshold for movement and rest
-#     if rest:
-#         time_threshold = 3 *60 # 3 minutes for rest
-#     else:
-#         time_threshold = 5 *60 # 5 minutes for movement
+    print('Extracting break times')
+
+    # time threshold for movement and rest
+    # if rest:
+    rest_time_threshold = 2 *60 # 2 minutes for rest
+    # else:
+    movement_time_threshold = 2 *60 # 5 minutes for movement
     
-#     ruck_slices = []
-#     all_cents = []
+    # init lists of slices
+    movement_slices = []
+    rest_slices = []
 
-#     for centdiff, dataset, centroid in zip(centroid_diffs, datasets, centroids):
-#         # reset index to be seconds from start, saving timestamps
-#         dataset.reset_index(inplace=True, names='timestamp')
-#         dataset.reset_index(inplace=True, names='seconds')
-#         single_slices = []
-#         single_cent = []
-#         # Rough conversion to meters from coordinates 
-#         if rest:
-#             bool_val = centdiff < 1
-#         else:
-#             bool_val = centdiff > 1
+    # loop through first differences of movement periods
+    for squadiff, dataset in zip(squads_diffs, datasets):
 
-#         slices = find_objects(label(bool_val)[0])
-#         for slice1 in slices:
-#             slice1 = slice1[0]
-#             length = slice1.stop - slice1.start
-#             if length > time_threshold:
-#                 this_data_slice = dataset[slice1]
-#                 cent_addit = 100
-#                 this_cent_slice = centroid[slice(slice1.start, slice1.stop + cent_addit)]
-#                 trim = 30
-#                 trimmed_slice = this_data_slice[trim:-trim]
-#                 trimmed_slice.attrs['name'] = dataset.attrs['name']
-#                 # trimmed_cent = this_cent_slice[trim:-trim]
-#                 single_slices.append(trimmed_slice)
-#                 # single_cent.append(trimmed_cent)
-#                 single_cent.append(this_cent_slice)
-#         ruck_slices.append(single_slices)
-#         all_cents.append(single_cent)
+        # init movement slices list
+        single_slices = []
 
-#     return ruck_slices, all_cents
+        # get bool val for rest and movement slices, where all soldiers below 1 m/s
+        movement_bool_val = (squadiff > 0.82).all(axis=1)
+        rest_bool_val = ~movement_bool_val
+
+        # use find objects to find slices of consecutive True
+        slices = find_objects(label(movement_bool_val)[0])
+
+        # loop through slices
+        for slice1 in slices:
+            slice1 = slice1[0]
+
+            # get length of slice
+            length = slice1.stop - slice1.start
+
+            # if long enough slice, append to list
+            if length > movement_time_threshold:
+                # extract the slice of data
+                this_data_slice = dataset[slice1]
+                # trim the slice to ensure mvoement or rest
+                trim = 30
+                trimmed_slice = this_data_slice[trim:-trim]
+                # set dataframe name attr
+                trimmed_slice.attrs['name'] = dataset.attrs['name']
+                # append this slice
+                single_slices.append(trimmed_slice)
+        # append all slives
+        movement_slices.append(single_slices)
+        
+        # do the same as above but for rest
+        single_slices = []
+        slices = find_objects(label(rest_bool_val)[0])
+        for slice1 in slices:
+            slice1 = slice1[0]
+            length = slice1.stop - slice1.start
+            if length > rest_time_threshold:
+                this_data_slice = dataset[slice1]
+                trim = 15
+                trimmed_slice = this_data_slice[trim:-trim]
+                trimmed_slice.attrs['name'] = dataset.attrs['name']
+                single_slices.append(trimmed_slice)
+        rest_slices.append(single_slices)
+
+    # plot the break times if plot is True
+    if plot:
+        
+        fig, ax = plt.subplots(len(datasets),1, figsize=(10,10))
+
+        print('Plotting break times')
+
+        # loop through first differences of squads
+        for count, (rests, movements, dataset, sq_diff) in enumerate(zip(rest_slices, movement_slices, datasets, squads_diffs)):
+
+            # get rest timestamps
+            rest_timestamps = pd.concat([r.index.to_series() for r in rests])
+            movement_timestamps = pd.concat([r.index.to_series() for r in movements])
+
+            # plot soldier times
+            ax[count].plot(sq_diff) 
+            max_lim = sq_diff.max().max()
+            max_lim = 3
+            # ax[count].fill_between(soldiers_diffs.index, 0,max_lim, where=(soldiers_diffs <= 1).all(axis=1) , color='red', alpha=0.5, transform=ax[count].get_xaxis_transform())
+            ax[count].fill_between(sq_diff.index, 0,max_lim, where=pd.Series([x in rest_timestamps for x in dataset.index.to_series()]) , color='red', alpha=0.5, transform=ax[count].get_xaxis_transform())
+            ax[count].fill_between(sq_diff.index, 0,max_lim, where=pd.Series([x in movement_timestamps for x in dataset.index.to_series()]) , color='green', alpha=0.5, transform=ax[count].get_xaxis_transform())
+            ax[count].set_ylim([0,max_lim])
+            ax[count].set_ylabel(dataset.attrs['name'], rotation='vertical')
+            ax[count].hlines(0.82, 0, 1)
+            # import pdb
+            # pdb.set_trace()
+            ax[count].set_xticks(np.arange(len(dataset.index))[::900], [x[11:16] for x in dataset.index.to_series()[::900].values])
+
+        fig.suptitle('Where all soldiers below 1 m/s for at least 2 minutes')
+        fig.tight_layout()
+        # plt.show()
+        fig.savefig(os.getcwd() + '\\Figures\\RestTest.png')
+        plt.close('all')
 
 
+    return movement_slices , rest_slices
 
 
 

@@ -1,13 +1,7 @@
 '''
-Functions for using the directional correlation metric for extracting leadership metrics
+Functions for using directional correlation time delay metrics as leadership metrics
 
 '''
-
-# from DataLoading import *
-# from PACS import *
-# from FeatureExtraction import *
-# from Clustering import *
-# from Preprocessing import *
 
 import networkx as nx
 from tqdm import tqdm
@@ -21,24 +15,27 @@ import os
 
 
 
-def get_directional_corr(rucks, names, UTM=True, threshold = 10, window_length = 9):
+def get_directional_corr(movement_periods, names, UTM=True, threshold = 10, window_length = 9):
     """
     Get the Directional Correlation of soldiers
     For finding the Directional Correlation time-delay as a leasership metric
-    and the ratio of time spent 'highly correlated' as a sychronicity metric
+    and the ratio of time spent 'highly correlated' as a sychronicity metric (Highly Correlated Segments (HCS))
 
-    Finding the normalized velocity vectors and taking the dot product as 'correlation'
+    Finding the normalized velocity vectors and taking the dot product between pairs as 'correlation' for different time delays -4 to 4 seconds
+    Time delay of maximum correlation is the directional ingfluence time delay measure 
+
+    Returns time delay dfs for each soldier in each movement period, HCS ratios for each soldier in each period, and a graph representation of leadership heirarchy for each movement period
 
 
     Args:
-        rucks (list): list of DataFrames for each movement period that have been further smoothed
+        movement_periods (list): list of DataFrames for each movement period that have been further smoothed
         names (list): list of names from this squad
         UTM (bool, optional): True if using UTM data, false if GPS data. Defaults to True.
         threshold (int, optional): Distance threshold, Directional Correlation only calculated if within this threshold (meters) for window_length of time (seconds). Defaults to 10.
         window_length (int, optional): Duration (in seconds) that two soldiers must be in proximity (below threshold distance) in order to calculate directional correlation. Defaults to 9.
 
     Returns:
-        time_delay_dfs (list): list of correaltional time delays ovedr time as dfs for each soldier during each mopvement period
+        time_delay_dfs (list): list of correaltional time delays over time as dfs for each soldier during each movement period
         HCS_ratio_dfs (list): list Series for each movement period, with an HSC ratio for each player
         graphs (list): list of networkx directed graphs representing leadership heirarchy, edges pointing from leader to follower
     """
@@ -70,8 +67,8 @@ def get_directional_corr(rucks, names, UTM=True, threshold = 10, window_length =
     # find pairs of soldiers
     name_pairs = list(combinations(names, 2))
     
-    # loop through rucks
-    for ruck in tqdm(rucks):
+    # loop through movement_periods
+    for ruck in tqdm(movement_periods):
         
         # initialize directed graph (this ruck)
         G = nx.DiGraph()
@@ -209,20 +206,36 @@ def get_directional_corr(rucks, names, UTM=True, threshold = 10, window_length =
 
 
 def leadership_graph_ani(time_delay_dfs, graphs, names, sq_name, show=False):
-    '''
+    """
     Plot an animation of leadership graphs for each movememt period
+    One frame is one movement period leadership heirarchy
     
     The leadership features have been extracted in get_directional_corr()
-    '''
+
+    Args:
+        time_delay_dfs (list): list of correaltional time delays over time as dfs for each soldier during each movement period
+        graphs (list): list of networkx directed graphs representing leadership heirarchy, edges pointing from leader to follower
+        names (list): list of names from this squad as list of str
+        sq_name (str): name of squad as str
+        show (bool, optional): if the plot should be displayed, saved if false. Defaults to False.
+
+    Returns:
+        _type_: _description_
+    """
     
     # Build plot
     fig, ax = plt.subplots(figsize=(10,10))
 
+    # initialize frame count
     n=0
 
+    # create frame-update function
     def update(n):
+
+        # clear the plot
         ax.clear()
 
+        # get graph of [n] movenent periods
         G = graphs[n]      
         tds = time_delay_dfs[n].mean()
         # tds = pd.concat(time_delay_dfs).mean()

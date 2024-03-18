@@ -2,6 +2,7 @@
 Functions for calculation of velocity 
 and functions for feature extraction related to that
 
+Including velocity over time, velocity differences over time within the group (max-min and varaince)
 """
 
 import pandas as pd
@@ -10,12 +11,12 @@ from tqdm import tqdm
 
 
 
-def get_velocities(smoothed_rucks, names, UTM=True):
+def get_velocities(smoothed_movements, names, UTM=True):
     """
     Get velocities from smoothed datasets using the first difference
 
     Args:
-        smoothed_rucks (list): list of extra smooth DataFrames
+        smoothed_movements (list): list of extra smooth DataFrames
         names (list): list of individual's names
         UTM (bool, optional): True if using UTM data, false if GPS data. Defaults to True.
 
@@ -35,8 +36,8 @@ def get_velocities(smoothed_rucks, names, UTM=True):
         Y = 'latitude'
     
 
-    # loop through oriented movement periods (rucks)
-    for ruck in tqdm(smoothed_rucks):
+    # loop through oriented movement periods (movements)
+    for movement in tqdm(smoothed_movements):
         
         # init list of this dataframe's velocities
         vel_for_df = []
@@ -45,7 +46,7 @@ def get_velocities(smoothed_rucks, names, UTM=True):
         for name in names:
 
             # get this soldier
-            this_soldier = pd.concat([ruck[X,name], ruck[Y,name]], axis=1)
+            this_soldier = pd.concat([movement[X,name], movement[Y,name]], axis=1)
 
             # get soldier velocity .diff()
             this_soldier_vels = this_soldier.diff()
@@ -89,8 +90,8 @@ def get_accel(vel_dfs, names, UTM=True):
         X = 'longitude'
         Y = 'latitude'
     
-    # loop through oriented movement periods (rucks)
-    for ruck_vel in tqdm(vel_dfs):
+    # loop through oriented movement periods (movements)
+    for movement_vel in tqdm(vel_dfs):
         
         # initialize list of acc dfs for thsi movement period
         acc_for_df = []
@@ -98,8 +99,8 @@ def get_accel(vel_dfs, names, UTM=True):
         # loop thorugh soldiers
         for name in names:
 
-            # this_soldier = pd.concat([ruck[X,name], ruck[Y,name]], axis=1)
-            this_soldier = ruck_vel[name]
+            # this_soldier = pd.concat([movement[X,name], movement[Y,name]], axis=1)
+            this_soldier = movement_vel[name]
 
             # get soldier velocity .diff()
             this_soldier_vels = this_soldier.diff()
@@ -176,30 +177,37 @@ def acc_corr(acc_dfs, names=None, time_window=30):
 
 
 
-def vel_corr(vel_dfs, names=None, time_window=30):
-    '''
+def vel_corr(vel_dfs, time_window=30):
+    """
     get the correlation of velocity across soldiers
+
+    Args:
+        vel_dfs (list of DataFrames): list of velosity DataFrames
+        time_window (int, optional): time window for calculating at velocity correlation. Defaults to 30.
+
+    Returns:
+        corr_dfs (list of DataFrames): list of dataframes with velocity correlation within the group over time
+    """
     
-    input: list of velocity dfs for movement periods
-    
-    output: avearage over correlation matrix for each timepoint
-    
-    '''
-    assert not names==None, 'Input names to vel_corr'
-    
+    # initialize list
     corr_dfs = []
     
     # loop through movement periods
     for vel_df in tqdm(vel_dfs):
+
         # init list
         corr_windows = []
+
         # loop through time windows (rolling, stride=1)
         for idx in range(len(vel_df)-time_window):
+
             # get data window
             data_window = vel_df[idx:idx+time_window]
+
             # get correlations in window, take average of matrix
             corr_windows.append(data_window.corr().mean())
         
+        # append to final list
         corr_dfs.append(pd.concat(corr_windows, axis=1).T)
 
     

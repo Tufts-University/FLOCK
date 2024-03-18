@@ -27,7 +27,7 @@ import os
 
 def cluster_for_separation(datasets, UTM=True, method='HDBSCAN', epsilon=10, min_cluster_size = 2):
     """
-    CLuster the data for separation metrics, using teh clustering method of choice
+    CLuster the data for separation metrics, using the density-based clustering method of choice (DBSCAN or HDBSCAN)
 
     Args:
         datasets (list): list of movement period DataFrames
@@ -39,13 +39,13 @@ def cluster_for_separation(datasets, UTM=True, method='HDBSCAN', epsilon=10, min
         
     Returns:
         _type_: _description_
-        all_inertias (list) : list of dataframes with cluster membership probabilities for each soldier, if method = 'HDBSCAN'
-        all_labels: (list): list of dataframes with cluster labels for each soldier at each timepoint
-        all_scores (list): list of series the silouette scores for each timepoint
+        all_membership_probs (list) : list of dataframes with cluster membership probabilities for each soldier, if method = 'HDBSCAN'
+        all_labels (list): list of dataframes with cluster labels for each soldier at each timepoint
+        all_scores (list): list of series the silouette scores for each timepoint, if multiple clusters are present, otherwise NaN
     """
 
     # initialize lists
-    all_inertias = []
+    all_membership_probs = []
     all_labels = []
     all_scores = []
 
@@ -144,24 +144,25 @@ def cluster_for_separation(datasets, UTM=True, method='HDBSCAN', epsilon=10, min
                     scores_data.append(silhouette_score(points, new_labels))
 
         # append resuilts to lists
-        all_inertias.append(pd.DataFrame(inertias_data, columns=names))
+        all_membership_probs.append(pd.DataFrame(inertias_data, columns=names))
         all_labels.append(pd.DataFrame(labels_data, columns=names))
         all_scores.append(pd.Series(scores_data))
 
-    return all_inertias, all_labels, all_scores
+    return all_membership_probs, all_labels, all_scores
 
 
 
 
 def get_outlier_time(all_labels):
-    '''
-    get the amount of time each soldier is an outlier
-    
-    input: list of clustering label dfs for the movement periods
+    """
+    get the amount of time each soldier is an outlier from cluster_for_separation label outputs
 
-    output: amount of time each soldier is considered an outlier (label = -1)
+    Args:
+        all_labels (list of DataFrames): list of clustering label dataframes
 
-    '''
+    Returns:
+        outlier_times (list of Series): amount of time each soldier is considered an outlier (label = -1) for each movement period dataframe
+    """
 
     outlier_times = []
 
@@ -198,26 +199,32 @@ def get_outlier_time(all_labels):
 
 
 def prep_cluster_df(datasets, all_labels, change_units=True, decimate=0):
-    '''
+    """
     Prep dataframe for plotting
-    
-    Input: dataframe of location data (columns= '[MASRTE ID] longitude' and latitude)
-    
-    Output: Long form dataframe for seaborn plots (columns=['longitude','latitude','ID','time'])
-    
-    '''
+
+    Args:
+        datasets (list): list of movement period DataFrames
+        all_labels (list of DataFrames): list of clustering label dataframes
+        change_units (bool, optional): True if units should be changed (change if Long/Lat). Defaults to True.
+        decimate (int, optional): Decimation factor for the signal. Defaults to 0.
+
+    Returns:
+        prepped_clust_dfs (list of DataFrames): Long form dataframe for seaborn plots (columns=['longitude','latitude','ID','time'])
+    """
+
+    # initialize list
     prepped_clust_dfs = []
 
     print('re-formatting data')
 
+    # loop through dfs and label series
     for df, labels in zip(tqdm(datasets), all_labels):
-
         
-        # # decimate the signal (take every X samples) if decimate doesnt = 0 
-        # if decimate:
-        #     ndf = df[::decimate]
-        #     ndf.attrs['name'] = df.attrs['name']
-        #     df = ndf
+        # decimate the signal (take every X samples) if decimate doesnt = 0 
+        if decimate:
+            ndf = df[::decimate]
+            ndf.attrs['name'] = df.attrs['name']
+            df = ndf
 
         # get unique names from columns
         names = []
@@ -293,10 +300,17 @@ def prep_cluster_df(datasets, all_labels, change_units=True, decimate=0):
 
 
 def make_cluster_gifs(prepped_clust_dfs):
-    '''
+    """
     make gifs from plot_prepped datasets
-    '''
 
+    Args:
+        prepped_clust_dfs (list of DataFrames): list of dataframes that have been prepped for plotting (long form for seaborn)
+
+    Returns:
+        None: None
+    """
+
+    # loop through dataframes
     for count, df in enumerate(tqdm(prepped_clust_dfs)):
 
         

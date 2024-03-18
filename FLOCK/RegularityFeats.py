@@ -252,3 +252,5 @@ def time_series_metric_entropy(metric, range=[-10,10], bins=100):
 
     # return mean over movement periods 
     return entropies.mean()
+
+

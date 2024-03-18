@@ -22,7 +22,7 @@ raw_datasets = DataLoading.load_data(data_dir)
 # Re-shape datasets
 datasets = DataLoading.pivot_datsets(raw_datasets)
 # drop outliers and interpolate datasets
-interp_datasets = Preprocessing.interpolate_datasets(datasets, threshold = 0.99)
+interp_datasets = Preprocessing.interpolate_datasets(datasets)
 
 '''Initialize features'''
 # get names of group (squad) members
@@ -35,10 +35,11 @@ Indiv_feats = pd.DataFrame(index=all_individuals)
 Squad_feats = pd.DataFrame(index=all_squads)
 
 
-'''Optional Clustering step'''
+'''Optional Clustering step
 # cluster here before extracting further features from significant cluster separately
 # for more robust results where groups split up
 # We assume that the defined groups do not full separate
+'''
 
 '''Optional Sectioning step
 # use this to get features from different sections of the movement, to see how features change over time
@@ -711,6 +712,6 @@ for move_slice, rest, full_cent, stops in zip(move_slices, rest_slices, centroid
 
 
 
-Indiv_feats.to_pickle(os.getcwd() + '\\SampleFeatures\\Indiv_feats.pkl') 
-Squad_feats.to_pickle(os.getcwd() + '\\SampleFeatures\\Squad_feats.pkl') 
+# Indiv_feats.to_pickle(os.getcwd() + '\\SampleFeatures\\Indiv_feats.pkl') 
+# Squad_feats.to_pickle(os.getcwd() + '\\SampleFeatures\\Squad_feats.pkl') 
 

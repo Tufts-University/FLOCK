@@ -1,7 +1,8 @@
 '''
-Functions for loading of GPX data for Ruck analysis
+Functions for loading of .CSV data for movement analysis
 
-Options for loading UTM data instead as well
+Datasets should be organized such that each row of the csv is one timepoint
+each individual should have a column for latitude and longitude, or UTM x and y
 
 '''
 
@@ -13,13 +14,17 @@ import pandas as pd
 
 def load_data(data_dir):
     """
-    From a data directory, load a list of all datasets
+    From a data directory, load a list of all group movement datasets
+
+    Each file in the directory should be .csv with data from one group's movement activity
+    Each row in the file represents one timepoint for one idividual and
+    they should have 'latitude' and 'longitude' columns or 'UTM_x' and 'UTM_y' columns
 
     Args:
         data_dir (str): filepath where data is located
 
     Returns:
-        datasets (list): list of DataFrames, one for each dataset
+        datasets (list): list of DataFrames, one for each group movement dataset
     """
 
     # init datasets list
@@ -48,6 +53,9 @@ def pivot_datsets(datasets):
     """
     Pivot datasets to work with processing functions
 
+    This pivots the dataset such that each row is one timepoint 
+    all group members are included in each timepoint
+
     Args:
         datasets (list): list of raw Dataset dfs
 
@@ -61,10 +69,6 @@ def pivot_datsets(datasets):
     # loop through datasets
     for dataset in datasets:
 
-        # for some reason, one of the members in one squad was duplicated (in only UTM data)
-        if dataset.duplicated().any():
-            dataset = dataset[~dataset.duplicated()]
-        
         # pivot dataset
         new_df = pd.pivot(dataset, columns='Member_ID', index='time')
 
@@ -77,28 +81,6 @@ def pivot_datsets(datasets):
     return new_dfs
 
 
-def load_GPX_data(GPX_directory):
-
-    GPX_directory = open(r'C:\Users\James\Downloads\test_gpx.gpx')
-    gpx = gpxpy.parse(GPX_directory)
-
-    # Convert to a dataframe one point at a time.
-    points = []
-    for track in gpx.tracks:
-        for segment in track.segments:
-            for p in segment.points:
-                points.append({
-                    'time': p.time,
-                    'latitude': p.latitude,
-                    'longitude': p.longitude,
-                    'elevation': p.elevation,
-                })
-    df = pd.DataFrame.from_records(points)
-
-    return None
-
-
-
 
 if __name__ == '__main__':
     '''
@@ -106,7 +88,4 @@ if __name__ == '__main__':
 
     Usually for a demo of the functions in the module as returns not available
     '''
-    data_dir = os.getcwd() + '\\Data\\csv'
-    data = load_data(data_dir)
-    import pdb
-    pdb.set_trace()
+    data_dir = os.getcwd() + '\\SampleData'

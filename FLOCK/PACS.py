@@ -1,7 +1,5 @@
 '''
-Path Adapted Coordinate System
-
-transformation and feature extraction
+Path Adapted Coordinate System transformation functions
 
 '''
 
@@ -136,7 +134,7 @@ def PACS_transform(datasets, UTM=True):
     we get the distance of the individual to the group's spline path (left or right) as the X coordinate
     we then find the distance along the spline path from the location of the groups center to the individual's location as the new Y coordinate
 
-    Developed with Dr. Eric Miller for the CABCS at Tufts University
+    Developed by Dr. Eric Miller and James McIntyre for CABCS at Tufts University
 
     Args:
         datasets (list): list of dataset dfs to re-orient
@@ -329,10 +327,22 @@ def PACS_transform(datasets, UTM=True):
 
 
 
-def plot_sample_PACS_figure(smooth_rucks, ruck_slices_oriented, random = True, time_length = 200):
+def plot_sample_PACS_figure(smooth_movements, ruck_slices_oriented, random = True, time_length = 200):
+    """
+    Plot a sample image for the PACS transformation
+
+    Args:
+        smooth_movements (list of DataFrames): list of smoothed movement period dataframes (not oriented)
+        ruck_slices_oriented (list of DataFrames): list of PACS oriented movement period dataframes
+        random (bool, optional): If True, choose a random movement period and random timepoint, otherwise use specified example timepoint. Defaults to True.
+        time_length (int, optional): length of time for the PACS to plot as a 2D histogram. Defaults to 200.
+
+    Returns:
+        None: None
+    """
 
     # get group member names
-    names = smooth_rucks[0].latitude.columns.tolist()
+    names = smooth_movements[0].latitude.columns.tolist()
 
     # define colors for all plots 
     color_dictionary = dict(zip(names, sns.color_palette(as_cmap=True)[:len(names)]))
@@ -346,7 +356,7 @@ def plot_sample_PACS_figure(smooth_rucks, ruck_slices_oriented, random = True, t
         random_timepoint = 100
     
     # get section
-    random_slice = smooth_rucks[random_period].iloc[random_timepoint:random_timepoint+time_length]
+    random_slice = smooth_movements[random_period].iloc[random_timepoint:random_timepoint+time_length]
     random_PACS_slice = ruck_slices_oriented[random_period].iloc[random_timepoint:random_timepoint+time_length]
 
     #  get a sample path
@@ -387,7 +397,7 @@ def plot_sample_PACS_figure(smooth_rucks, ruck_slices_oriented, random = True, t
     sample_time_length = 40
 
     # get section
-    random_slice = smooth_rucks[random_period].iloc[random_timepoint:random_timepoint+sample_time_length]
+    random_slice = smooth_movements[random_period].iloc[random_timepoint:random_timepoint+sample_time_length]
     random_PACS_slice = ruck_slices_oriented[random_period].iloc[random_timepoint:random_timepoint+sample_time_length]
 
     #  get a sample path

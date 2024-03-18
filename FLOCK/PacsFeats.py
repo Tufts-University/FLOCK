@@ -1,6 +1,7 @@
 '''
-Functions for extracting features from the Path Adapted Coordinate System (PACS) data
+Functions for extracting features from the Path Adapted Coordinate System (PACS) transformed data
 
+Including spatial exploraion index, neighbor distance, and distribution consistency measures
 '''
 
 import pandas as pd
@@ -9,14 +10,14 @@ from scipy.stats import f_oneway, wasserstein_distance
 from tqdm import tqdm
 
 
-def get_SEIs(ruck_slices_oriented, names):
+def get_SEIs(movement_slices_oriented, names):
     """
     get the spatial explioration index for each soldier during each movement period from oriented data
     SEI is considered the distance of a soldier from their own average location during a movement period
     we include distances over the whole period, so that mean, max ect can be captured elsewhere
 
     Args:
-        ruck_slices_oriented (list): list of oriented dataset dfs
+        movement_slices_oriented (list): list of oriented dataset dfs
         names (list): list of names
 
     Returns:
@@ -26,8 +27,8 @@ def get_SEIs(ruck_slices_oriented, names):
     # initialize list
     SEIs = []
 
-    # loop throug oriented movement periods (rucks)
-    for ruck in tqdm(ruck_slices_oriented):
+    # loop throug oriented movement periods (movements)
+    for movement in tqdm(movement_slices_oriented):
         
         # initialize list
         SEI_for_df = []
@@ -36,7 +37,7 @@ def get_SEIs(ruck_slices_oriented, names):
         for name in names:
 
             # get this individual
-            this_soldier = ruck[[c for c in ruck.columns if name in c]]
+            this_soldier = movement[[c for c in movement.columns if name in c]]
             
             # get average soldier positoin
             this_soldier_mean = this_soldier.mean()
@@ -127,13 +128,13 @@ def get_neighbor_dists(move_slices_oriented, names):
 
 
 
-def LW_ratio(ruck_slices_oriented):
+def LW_ratio(movement_slices_oriented):
     """
     get the length to width ratio
     furthest separation front/back (length) divided by furthest separation side/side (width)
 
     Args:
-        ruck_slices_oriented (list): list of oriented dataset dfs
+        movement_slices_oriented (list): list of oriented dataset dfs
 
     Returns:
         LW_ratios (list): list of L/W ratios over time for each movement period
@@ -143,13 +144,13 @@ def LW_ratio(ruck_slices_oriented):
     LW_ratios = []
 
     # Loop through movement periods
-    for ruck in ruck_slices_oriented:
+    for movement in movement_slices_oriented:
 
         # get range of X and Y
-        Xmin = ruck[[c for c in ruck.columns if 'longitude' in c]].min(axis=1)
-        Xmax = ruck[[c for c in ruck.columns if 'longitude' in c]].max(axis=1)
-        Ymin = ruck[[c for c in ruck.columns if 'latitude' in c]].min(axis=1)
-        Ymax = ruck[[c for c in ruck.columns if 'latitude' in c]].max(axis=1)
+        Xmin = movement[[c for c in movement.columns if 'longitude' in c]].min(axis=1)
+        Xmax = movement[[c for c in movement.columns if 'longitude' in c]].max(axis=1)
+        Ymin = movement[[c for c in movement.columns if 'latitude' in c]].min(axis=1)
+        Ymax = movement[[c for c in movement.columns if 'latitude' in c]].max(axis=1)
 
         # get peak to peak (max difference) (length and width)
         Widths = Xmax - Xmin
@@ -163,13 +164,13 @@ def LW_ratio(ruck_slices_oriented):
 
 
 
-def dist_consistency_Ftest(ruck_slices_oriented, names):
+def dist_consistency_Ftest(movement_slices_oriented, names):
     """
     Measure the consistency of soldier positions across movement periods
     F-test statistic as a metric for each soldier's oriented position consistency across movement periods
 
     Args:
-        ruck_slices_oriented (list): list of oriuented datasets as dfs
+        movement_slices_oriented (list): list of oriuented datasets as dfs
         names (list): list of soldier names
 
     Returns:
@@ -185,23 +186,23 @@ def dist_consistency_Ftest(ruck_slices_oriented, names):
     for name in names:
 
         # if there is not more than one movement period, return NaN
-        if len(ruck_slices_oriented)>1:
+        if len(movement_slices_oriented)>1:
 
             # initialize lists 
             this_soldier_X = []
             this_soldier_Y = []
 
             # loop thorough movement periods
-            for ruck in ruck_slices_oriented:
+            for movement in movement_slices_oriented:
 
                 # get this soldier
-                this_soldiers_ruck = ruck[[c for c in ruck if name in c]]
+                this_soldiers_movement = movement[[c for c in movement if name in c]]
 
                 # get X and Y distributions for each movement period
-                # this_soldier_X.append(this_soldiers_ruck[[c for c in this_soldiers_ruck if 'longitude' in c]])
-                # this_soldier_Y.append(this_soldiers_ruck[[c for c in this_soldiers_ruck if 'latitude'  in c]])
-                this_soldier_X.append(np.histogram(this_soldiers_ruck[[c for c in this_soldiers_ruck if 'longitude' in c]], bins=100, range=[-50,50], density=True)[0])
-                this_soldier_Y.append(np.histogram(this_soldiers_ruck[[c for c in this_soldiers_ruck if 'latitude'  in c]], bins=100, range=[-50,50], density=True)[0])
+                # this_soldier_X.append(this_soldiers_movement[[c for c in this_soldiers_movement if 'longitude' in c]])
+                # this_soldier_Y.append(this_soldiers_movement[[c for c in this_soldiers_movement if 'latitude'  in c]])
+                this_soldier_X.append(np.histogram(this_soldiers_movement[[c for c in this_soldiers_movement if 'longitude' in c]], bins=100, range=[-50,50], density=True)[0])
+                this_soldier_Y.append(np.histogram(this_soldiers_movement[[c for c in this_soldiers_movement if 'latitude'  in c]], bins=100, range=[-50,50], density=True)[0])
             
             # get f-statistic ove movement periods
             X_ftest[name] = f_oneway(*this_soldier_X).statistic
@@ -218,12 +219,12 @@ def dist_consistency_Ftest(ruck_slices_oriented, names):
 
 
 
-def dist_consistency_wasserstein(ruck_slices_oriented, names):
+def dist_consistency_wasserstein(movement_slices_oriented, names):
     """
     get the wasserstein distance, a metric for each soldier's PACS location consistency across movement periods
 
     Args:
-        ruck_slices_oriented (list): oriented soldier positions for movement periods
+        movement_slices_oriented (list): oriented soldier positions for movement periods
         names (list): list of names.
 
     Returns:
@@ -237,16 +238,16 @@ def dist_consistency_wasserstein(ruck_slices_oriented, names):
 
     
     # if there is not more than one movement period, return NaN
-    if len(ruck_slices_oriented)==1:
+    if len(movement_slices_oriented)==1:
         X_wass = np.nan
         Y_wass = np.nan
     else:
 
-        # get pairs of ruck events:
-        ruck_pairs = [(a, b) for idx, a in enumerate(ruck_slices_oriented) for b in ruck_slices_oriented[idx + 1:]]
+        # get pairs of movement events:
+        movement_pairs = [(a, b) for idx, a in enumerate(movement_slices_oriented) for b in movement_slices_oriented[idx + 1:]]
 
         # loop through movement period pairs
-        for ruck_p in ruck_pairs:
+        for movement_p in movement_pairs:
     
             # initialize wasserstein distance for this pair
             X_wass = pd.Series(index=names)
@@ -256,14 +257,14 @@ def dist_consistency_wasserstein(ruck_slices_oriented, names):
             for name in names:
 
                 # get this soldier
-                this_soldiers_ruck_1 = ruck_p[0][[c for c in ruck_p[0] if name in c]]
-                this_soldiers_ruck_2 = ruck_p[1][[c for c in ruck_p[1] if name in c]]
+                this_soldiers_movement_1 = movement_p[0][[c for c in movement_p[0] if name in c]]
+                this_soldiers_movement_2 = movement_p[1][[c for c in movement_p[1] if name in c]]
 
                 # get X and Y distributions for each movement period
-                this_soldier_X1 = this_soldiers_ruck_1[[c for c in this_soldiers_ruck_1 if 'longitude' in c]]
-                this_soldier_Y1 = this_soldiers_ruck_1[[c for c in this_soldiers_ruck_1 if 'latitude'  in c]]
-                this_soldier_X2 = this_soldiers_ruck_2[[c for c in this_soldiers_ruck_2 if 'longitude' in c]]
-                this_soldier_Y2 = this_soldiers_ruck_2[[c for c in this_soldiers_ruck_2 if 'latitude'  in c]]
+                this_soldier_X1 = this_soldiers_movement_1[[c for c in this_soldiers_movement_1 if 'longitude' in c]]
+                this_soldier_Y1 = this_soldiers_movement_1[[c for c in this_soldiers_movement_1 if 'latitude'  in c]]
+                this_soldier_X2 = this_soldiers_movement_2[[c for c in this_soldiers_movement_2 if 'longitude' in c]]
+                this_soldier_Y2 = this_soldiers_movement_2[[c for c in this_soldiers_movement_2 if 'latitude'  in c]]
             
                 # get wasserstein distance from movement periods
                 X_wass[name] = wasserstein_distance(np.histogram(this_soldier_X1, range=(-50,50), bins=100)[0] , np.histogram(this_soldier_X2, range=(-50,50), bins=100, density=True)[0] )
