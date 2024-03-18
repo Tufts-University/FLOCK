@@ -29,22 +29,25 @@ The repository is organized as follows:
   
 * **SpatialFeats.py**
   * Feature extraction functions for spatio-temporal features (spatial features over time). Such as the stretch index, convex hull surface area and voronoi spaces
-    
-<img src="Figures/SpatialFeatureFig.png" alt="Spatial feature figure" width="400" title="Spatial features" />
-  
+<p align="center">    
+ <img src="Figures/SpatialFeatureFig.png" alt="Spatial feature figure" width="400" title="Spatial features" />
+</p>
+
 * **PACS.py**
   * Path-adapted coordinate system transformation
-    
-<img src="Figures/PACSfig.png" alt="PACS figure" width="600" title="PACS transformation" />
-  
+<p align="center">       
+ <img src="Figures/PACSfig.png" alt="PACS figure" width="600" title="PACS transformation" />
+</p>
+
 * **PacsFeats.py**
   * Feature extraction for path adapted coordinate system tranaformed data. Such as the spatial exploration index of each individual, the nearest neighbor (left/right and front/back), the length/width ratio of the group and the consistency of member positions in different movement periods
   
 * **DirectionalCorrelation.py**
   * Directional correlation time delay leadership metrics from Nagy et. al. including the directional correlation time delay for each individual, Highly correlated segments (HCS) for each pair and directed graph representation of the directional correaltion time dealy leadership heirarchy for each movement period  
+<p align="center">  
+ <img src="Figures/DirCorrFig.png" alt="Directional correlation time delay figure" width="300" title="Directional correlation leadership heirarchy" />
+</p>
 
-<img src="Figures/DirCorrFig.png" alt="Directional correlation time delay figure" width="300" title="Directional correlation leadership heirarchy" />
-  
 * **Regularity.py**
   * Movement regularity feature extraction including PACS coordinate entropy for each individual at each movement period, Vector autoregression with and without exogenous varaibles for predicability of each individual's movement over time, and entropy measures for all features that are calculated over time
   
