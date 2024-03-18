@@ -43,7 +43,7 @@ The repository is organized as follows:
 * **DirectionalCorrelation.py**
   * Directional correlation time delay leadership metrics from Nagy et. al. including the directional correlation time delay for each individual, Highly correlated segments (HCS) for each pair and directed graph representation of the directional correaltion time dealy leadership heirarchy for each movement period  
 
-<img src="Figures/DirCorrFig.png" alt="Directional correlation time delay figure" width="400" title="Directional correlation leadership heirarchy" />
+<img src="Figures/DirCorrFig.png" alt="Directional correlation time delay figure" width="300" title="Directional correlation leadership heirarchy" />
   
 * **Regularity.py**
   * Movement regularity feature extraction including PACS coordinate entropy for each individual at each movement period, Vector autoregression with and without exogenous varaibles for predicability of each individual's movement over time, and entropy measures for all features that are calculated over time
