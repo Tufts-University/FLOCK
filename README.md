@@ -6,7 +6,7 @@ The purpose of this package is to offer a processing and feature extraction tool
 
 
 ## Documentation
-Documentation can be found in the Docs folder of this repository
+Documentation can be found in the [Docs](./Docs) folder of this repository
 
 
 ## Quick start
