@@ -6,6 +6,7 @@ The purpose of this package is to offer preprocessing and feature extraction met
 
 
 ## Documentation
+Documentation can be found in the Docs folder of this repository
 
 
 ## Quick start
@@ -25,22 +26,22 @@ The repository is organized as follows:
   * 
     
 * **VelocityFeats.py**
-  * T
+  * Feature extraction functions for finding the velocity of each individual over time and features related to difference in velocities across group members
   
 * **SpatialFeats.py**
-  * T
+  * Feature extraction functions for spatio-temporal features (spatial features over time). Such as the stretch index, convex hull surface area and voronoi spaces 
   
 * **PACS.py**
-  * T
+  * Path-adapted coordinate system transformation
   
 * **PacsFeats.py**
-  * T
+  * Feature extraction for path adapted coordinate system tranaformed data. Such as the spatial exploration index of each individual, the nearest neighbor (left/right and front/back), the length/width ratio of the group and the consistency of member positions in different movement periods
   
 * **DirectionalCorrelation.py**
-  * T
+  * Directional correlation time delay leadership metrics from Nagy et. al. including the directional correlation time delay for each individual, Highly correlated segments (HCS) for each pair and directed graph representation of the directional correaltion time dealy leadership heirarchy for each movement period  
   
 * **Regularity.py**
-  * T
+  * Movement regularity feature extraction including PACS coordinate entropy for each individual at each movement period, Vector autoregression with and without exogenous varaibles for predicability of each individual's movement over time, and entropy measures for all features that are calculated over time
   
 
 
