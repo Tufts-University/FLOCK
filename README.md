@@ -28,10 +28,14 @@ The repository is organized as follows:
   * Feature extraction functions for finding the velocity of each individual over time and features related to difference in velocities across group members
   
 * **SpatialFeats.py**
-  * Feature extraction functions for spatio-temporal features (spatial features over time). Such as the stretch index, convex hull surface area and voronoi spaces 
+  * Feature extraction functions for spatio-temporal features (spatial features over time). Such as the stretch index, convex hull surface area and voronoi spaces
+    
+![Spatial feature figure](Figures/SpatialFeatureFig.png)
   
 * **PACS.py**
   * Path-adapted coordinate system transformation
+    
+![Spatial feature figure](Figures/PACSfig.png)
   
 * **PacsFeats.py**
   * Feature extraction for path adapted coordinate system tranaformed data. Such as the spatial exploration index of each individual, the nearest neighbor (left/right and front/back), the length/width ratio of the group and the consistency of member positions in different movement periods
