@@ -2,7 +2,7 @@
 
 Welcome to the FLOCK-GPS repository
 
-The purpose of this package is to offer a processing and feature extraction toolkit for assessing group movement dynamics from GPS location data.
+The purpose of this package is to serve as a processing and feature extraction toolkit for assessing group movement dynamics from GPS location data.
 
 
 ## Documentation
