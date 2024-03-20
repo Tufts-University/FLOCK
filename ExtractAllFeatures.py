@@ -712,6 +712,6 @@ for move_slice, rest, full_cent, stops in zip(move_slices, rest_slices, centroid
 
 
 
-# Indiv_feats.to_pickle(os.getcwd() + '\\SampleFeatures\\Indiv_feats.pkl') 
-# Squad_feats.to_pickle(os.getcwd() + '\\SampleFeatures\\Squad_feats.pkl') 
+Indiv_feats.to_pickle(os.getcwd() + '\\SampleFeatures\\Indiv_feats.pkl') 
+Squad_feats.to_pickle(os.getcwd() + '\\SampleFeatures\\Squad_feats.pkl') 
 

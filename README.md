@@ -11,9 +11,9 @@ Documentation can be found in the [Docs](./Docs) folder of this repository
 
 ## Quick start
 
+The [tutorials](./Tutorials) folder contains a walkthrough for each preprocessing and feature extraction step, while the [ExtractAllFeatures](./ExtractAllFeatures.py) script shows how to combine and run all processing and extraction. 
+To run the predictive modeling analysis, fist instantiate your R home in the [Predictive-Modeling](./PredictiveModeling) notebook.
 
-
-The repository is organized as follows:
 
 ## FLOCK functions
 
@@ -31,12 +31,14 @@ The repository is organized as follows:
   * Feature extraction functions for spatio-temporal features (spatial features over time). Such as the stretch index, convex hull surface area and voronoi spaces
 <p align="center">    
  <img src="Figures/SpatialFeatureFig.png" alt="Spatial feature figure" width="400" title="Spatial features" />
+ <em>Spatial features such as distance to centroid (stretch index), convex hull surface area, and voronoi spaces</em>
 </p>
 
 * **PACS.py**
   * Path-adapted coordinate system transformation
 <p align="center">       
  <img src="Figures/PACSfig.png" alt="PACS figure" width="600" title="PACS transformation" />
+ <em>Path-adapted coordinate system example. The leftmost figure shows the raw path and one timepoint while the next figures show the straightened PACS path and coordinates of group members over a time-window in the PACS space.</em>
 </p>
 
 * **PacsFeats.py**
@@ -46,6 +48,7 @@ The repository is organized as follows:
   * Directional correlation time delay leadership metrics from Nagy et. al. including the directional correlation time delay for each individual, Highly correlated segments (HCS) for each pair and directed graph representation of the directional correaltion time dealy leadership heirarchy for each movement period  
 <p align="center">  
  <img src="Figures/DirCorrFig.png" alt="Directional correlation time delay figure" width="300" title="Directional correlation leadership heirarchy" />
+ <em>Leadership heirarchy from the directional correlation time delay analysis</em>
 </p>
 
 * **Regularity.py**
