@@ -30,14 +30,14 @@ To run the predictive modeling analysis, fist instantiate your R home in the [Pr
 * **SpatialFeats.py**
   * Feature extraction functions for spatio-temporal features (spatial features over time). Such as the stretch index, convex hull surface area and voronoi spaces
 <p align="center">    
- <img src="Figures/SpatialFeatureFig.png" alt="Spatial feature figure" width="400" title="Spatial features" />
+ <img src="Figures/SpatialFeatureFig.png" alt="Spatial feature figure" width="400" title="Spatial features" /> <br>
  <em>Spatial features such as distance to centroid (stretch index), convex hull surface area, and voronoi spaces</em>
 </p>
 
 * **PACS.py**
   * Path-adapted coordinate system transformation
 <p align="center">       
- <img src="Figures/PACSfig.png" alt="PACS figure" width="600" title="PACS transformation" />
+ <img src="Figures/PACSfig.png" alt="PACS figure" width="600" title="PACS transformation" /> <br>
  <em>Path-adapted coordinate system example. The leftmost figure shows the raw path and one timepoint while the next figures show the straightened PACS path and coordinates of group members over a time-window in the PACS space.</em>
 </p>
 
@@ -47,7 +47,7 @@ To run the predictive modeling analysis, fist instantiate your R home in the [Pr
 * **DirectionalCorrelation.py**
   * Directional correlation time delay leadership metrics from Nagy et. al. including the directional correlation time delay for each individual, Highly correlated segments (HCS) for each pair and directed graph representation of the directional correaltion time dealy leadership heirarchy for each movement period  
 <p align="center">  
- <img src="Figures/DirCorrFig.png" alt="Directional correlation time delay figure" width="300" title="Directional correlation leadership heirarchy" />
+ <img src="Figures/DirCorrFig.png" alt="Directional correlation time delay figure" width="300" title="Directional correlation leadership heirarchy" /> <br>
  <em>Leadership heirarchy from the directional correlation time delay analysis</em>
 </p>
 
