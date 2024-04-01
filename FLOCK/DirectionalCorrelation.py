@@ -290,7 +290,7 @@ def leadership_graph_ani(time_delay_dfs, graphs, names, sq_name, show=False):
     else:
         ani.save(os.getcwd() + r'\Figures\Pairwise_Leadership_Animation_'+sq_name+'.gif')
 
-    return ani
+    return None
 
 
 

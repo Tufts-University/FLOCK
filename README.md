@@ -51,6 +51,20 @@ To run the predictive modeling analysis, fist instantiate your R home in the [Pr
  <em>Leadership heirarchy from the directional correlation time delay analysis</em>
 </p>
 
+* **ClusteringFeats.py**
+  * Features from clustering analysis using a heirarchical density-based clustering method (HDBSCAN)
+
+Grid lines are 10 meters apart <br>
+Colors represent different clusters <br>
+Opacity represents 'cluster membership probability' <br>
+<img src= '..\Figures\GIF_Squad_1_0.gif' width='700' align='center'>
+
+
+<p align="center">    
+ <img src= '..\Figures\GIF_Squad_1_0.gif' alt="Clustering gif" width="700" title="Clustering gif" /> <br>
+ <em>HDBSCAN clustering in action, tick lines are 5m apart</em>
+</p>
+
 * **Regularity.py**
   * Movement regularity feature extraction including PACS coordinate entropy for each individual at each movement period, Vector autoregression with and without exogenous varaibles for predicability of each individual's movement over time, and entropy measures for all features that are calculated over time
   

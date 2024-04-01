@@ -20,7 +20,7 @@ import pandas as pd
 import io
 import PIL
 import os
-
+import matplotlib
 
 
 
@@ -194,19 +194,18 @@ def get_outlier_time(all_labels):
 
 
 
-
-def prep_cluster_df(datasets, all_labels, change_units=True, decimate=0):
+def prep_cluster_df(datasets, all_labels, all_membership_probs, decimate=0):
     """
     Prep dataframe for plotting
 
     Args:
         datasets (list): list of movement period DataFrames
         all_labels (list of DataFrames): list of clustering label dataframes
-        change_units (bool, optional): True if units should be changed (change if Long/Lat). Defaults to True.
+        all_membership_probs (list of DataFrames): list of membership probability dataframes
         decimate (int, optional): Decimation factor for the signal. Defaults to 0.
 
     Returns:
-        prepped_clust_dfs (list of DataFrames): Long form dataframe for seaborn plots (columns=['longitude','latitude','ID','time'])
+        prepped_clust_dfs (list of DataFrames): Long form dataframe for seaborn plots (columns=['UMT_x','UTM_y','ID','time'])
     """
 
     # initialize list
@@ -215,7 +214,7 @@ def prep_cluster_df(datasets, all_labels, change_units=True, decimate=0):
     print('re-formatting data')
 
     # loop through dfs and label series
-    for df, labels in zip(tqdm(datasets), all_labels):
+    for df, labels, probs in zip(tqdm(datasets), all_labels, all_membership_probs):
         
         # decimate the signal (take every X samples) if decimate doesnt = 0 
         if decimate:
@@ -234,74 +233,60 @@ def prep_cluster_df(datasets, all_labels, change_units=True, decimate=0):
         names = [x for x in list(set(names)) if 'Unnamed:' not in x]
 
         # initialize dfs
-        new_df = pd.DataFrame(columns=['longitude','latitude','ID','time', 'X_err', 'Y_err', 'cluster'])
+        new_df = pd.DataFrame()
 
         # get individual soldier data
         indiv_dfs = []
         for ID in names:
             # separate This soldier
             if type(col) == tuple:
-                indiv_data = df[[c for c in df.columns if np.logical_and(ID in c, np.logical_or('longitude' in c, 'latitude' in c))]]
+                indiv_data = df[[c for c in df.columns if np.logical_and(ID in c, np.logical_or('UTM_x' in c, 'UTM_y' in c))]]
                 indiv_data.reset_index(inplace=True, drop=True)
             else:
                 indiv_data = df[[c for c in df.columns if ID in c]]
-            indiv_data.columns = ['latitude','longitude']
-            # X_err = indiv_data['longitude'].rolling(60, center=True).var()*3*2
-            # Y_err = indiv_data['latitude']. rolling(60, center=True).var()*3*2
+            indiv_data.columns = ['UTM_y','UTM_x']
 
             # normalize here
-            indiv_data['longitude'] = indiv_data['longitude'] - df['longitude'].mean(axis=1).values
-            indiv_data['latitude'] = indiv_data['latitude'] - df['latitude'].mean(axis=1).values
-            
-            # indiv_data = pd.concat([indiv_data, pd.Series(X_err,name='X_err')], axis=1)
-            # indiv_data = pd.concat([indiv_data, pd.Series(Y_err,name='Y_err')], axis=1)
+            indiv_data['UTM_x'] = indiv_data['UTM_x'] - df['UTM_x'].mean(axis=1).values
+            indiv_data['UTM_y'] = indiv_data['UTM_y'] - df['UTM_y'].mean(axis=1).values
 
-            # indiv_data = pd.concat([indiv_data, pd.Series([ID]*len(indiv_data),name='ID')], ignore_index=True)
+            # add ID columns
             indiv_data['ID'] = [ID]*len(indiv_data)
-            indiv_data['cluster'] = 'Cluster: ' + labels[ID].astype(str)
-            # indiv_data['cluster'] = labels[ID]
+
+            # add membership probability column
+            indiv_data['proba'] = probs[ID]
+
+            # add cluster label column
+            indiv_data['cluster'] = labels[ID]
+
+            # reset index to be time colimn
             indiv_data.reset_index(names='time', inplace=True)
 
+            # append to list
             indiv_dfs.append(indiv_data) 
 
-            indiv_data.cluster.unique()
-        
+        # concat into df
         new_df = pd.concat(indiv_dfs)
 
-        # Rotate 90 degrees, right is forward in new_df
-        # also convert to feet
-        front_df = pd.DataFrame()
-        # front_df['X'] = new_df['latitude'] * 111139 #(10000 / 90) * 3280
-        # front_df['Y'] = -new_df['longitude'] * 111139 * math.cos(df[[c for c in df.columns if 'latitude' in c]].mean().mean())#(10000 / 90) * 3280
-        if change_units:
-            front_df['X'] = new_df['longitude'] * 111139  * math.cos(df[[c for c in df.columns if 'latitude' in c]].mean().mean())
-            front_df['Y'] = new_df['latitude'] * 111139
-            # front_df['X_err'] = new_df['X_err'] * 111139  * math.cos(df[[c for c in df.columns if 'latitude' in c]].mean().mean())
-            # front_df['Y_err'] = new_df['Y_err'] * 111139
-        else:
-            front_df['X'] = new_df['longitude']
-            front_df['Y'] = new_df['latitude'] 
-            # front_df['X_err'] = new_df['X_err']
-            # front_df['Y_err'] = new_df['Y_err']
-        front_df['time'] = new_df['time']
-        front_df['ID'] = new_df['ID']
-        front_df['cluster'] = new_df['cluster']
-        front_df.attrs['name'] = df.attrs['name']
-        front_df['X_err'] = front_df['X'].rolling(30, center=True).var()/2
-        front_df['Y_err'] = front_df['Y'].rolling(30, center=True).var()/2
+        # name new df
+        new_df.attrs['name'] = df.attrs['name']
 
-        prepped_clust_dfs.append(front_df)
+        # append new df to final list
+        prepped_clust_dfs.append(new_df)
+
 
     return prepped_clust_dfs 
 
 
 
-def make_cluster_gifs(prepped_clust_dfs):
+
+def make_cluster_gifs(prepped_clust_dfs, decimation = 100):
     """
     make gifs from plot_prepped datasets
 
     Args:
         prepped_clust_dfs (list of DataFrames): list of dataframes that have been prepped for plotting (long form for seaborn)
+        decimation (int): decimation factor for how many samples to include in the animation (usually for computation time), 0 or False if no decimation
 
     Returns:
         None: None
@@ -310,85 +295,85 @@ def make_cluster_gifs(prepped_clust_dfs):
     # loop through dataframes
     for count, df in enumerate(tqdm(prepped_clust_dfs)):
 
-        
-        m = 60
+        if decimation:
 
-        print('trimming timepoints')
+            print('trimming timepoints')
 
-        # Trim timepoints
-        df_name = df.attrs['name']
-        time = df['time']
-        dfn = []
-        for t in time[::m]:
-            df_t = df[df['time']==t]
-            dfn.append(df_t)
-        df = pd.concat(dfn)
+            # Trim timepoints
+            df_name = df.attrs['name']
+            time = df['time']
+            # get list for new df
+            dfn = []
+            # loop thorugh datapoints to include
+            for t in time[::decimation]:
+                df_t = df[df['time']==t]
+                # append to new df
+                dfn.append(df_t)
+            # concat new df
+            df = pd.concat(dfn)
+
+        # sort df
         df.sort_values('time', inplace=True)
+
+        # change from seconds to minutes
         df['time (min)'] = df['time']/60
         df['time (min)'] = df['time (min)'].astype(float).round(3)
+
+        # name new df
         df.attrs['name'] = df_name
-
-
-        # df['cluster'] = df['cluster'].astype(str)
-        
-        print(df.cluster.unique())
-
-        # import pdb
-        # pdb.set_trace()
 
         print('initialize animation plot')
 
         # sample plotly animated figure
-        fig = px.scatter(df, x="X", y="Y", animation_frame="time (min)", animation_group="ID",
-                color="cluster", title=df.attrs['name']+"_"+str(count),)
-                # range_y=[df['Y'].min(), df['Y'].max()], range_x=[df['Y'].min(), df['Y'].max()],#, category_orders = np.arange(len(df.cluster.unique()))) 
-                #range_x=[df['X'].min(), df['X'].max()])
-                # error_x='X_max', error_x_minus='X_min', error_y='Y_max', error_y_minus='Y_min')
-                # error_x='X_err', error_y='Y_err', color_discrete_sequence=sns.color_palette(as_cmap=True))
-                # marginal_x='box', marginal_y='box')
-        fig.update_xaxes(scaleanchor="y", scaleratio=1, dtick=10)
-        fig.update_yaxes(scaleanchor="x", scaleratio=1, dtick=10)
+        fig = px.scatter(df, x="UTM_x", y="UTM_y", animation_frame="time (min)", animation_group="ID",
+                color = "cluster", title=' '.join(df.attrs['name'].split('_'))+" movement period "+str(count), 
+                opacity=df['proba'], range_color=(df.cluster.min(),df.cluster.max()), color_continuous_scale = px.colors.sequential.Jet[::-1])#, category_orders = df.cluster.unique() ,color_discrete_sequence=colors_map, )
+
+        # set tick scales and aspect ratio
+        fig.update_xaxes(scaleanchor="y", scaleratio=1, dtick=5, showticklabels = False)
+        fig.update_yaxes(scaleanchor="x", scaleratio=1, dtick=5, showticklabels = False)
+
 
         print('generate animation plot')
+
 
         # generate images for each step in animation
         frames = []
         for s, fr in enumerate(tqdm(fig.frames)):
+
             # set main traces to appropriate traces within plotly frame
             fig.update(data=fr.data)
+
+            # change marker size depending on zoom level
+            rng = fig.full_figure_for_development().layout.xaxis.range
+            sz = 800/(rng[1] - rng[0])
+
+            # update marker size
+            fig.update_traces(marker={'size': sz})
+        
             # move slider to correct place
             fig.layout.sliders[0].update(active=s)
+
             # generate image of current state
             frames.append(PIL.Image.open(io.BytesIO(fig.to_image(format="png", scale = 2))))
-
-        def animate(i):
-            fig.update(data=fig.frames[i].data)
-
-        
+            
         print('save plot')
 
-        # create animated GIF
-        # frames[0].save(
-        #         os.getcwd() + '\\Figures\\GIF_' + df.attrs['name']+"_"+str(count)+".gif",
-        #         save_all=True,
-        #         append_images=frames[1:],
-        #         optimize=True,
-        #         duration=90,
-        #         loop=0            
-        #     )
-        # print('GIF saved to: ' + os.getcwd() + '\\Figures\\GIF_' + df.attrs['name']+"_"+str(count)+".gif")
-
+        # create and save animated GIF
+        frames[0].save(
+                os.getcwd() + '\\Figures\\GIF_' + df.attrs['name']+"_"+str(count)+".gif",
+                save_all=True,
+                append_images=frames[1:],
+                optimize=True,
+                duration=100,
+                loop=0,       
+            )
         
-        # init FuncAnimation
-        ani = plt.animation.FuncAnimation(fig, animate, frames=fig.frames, interval=200)
+        print('GIF saved to: ' + os.getcwd() + '\\Figures\\GIF_' + df.attrs['name']+"_"+str(count)+".gif")
 
-        from IPython.display import HTML
-        HTML(ani.to_jshtml())
 
 
     return None
-
-
 
 
 if __name__ == '__main__':
