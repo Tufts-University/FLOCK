@@ -20,6 +20,7 @@ To run the predictive modeling analysis, fist instantiate your R home in the [Pr
 * **DataLoading.py**
   * Functions for loading and re-formatting data from a directory of .csv files
   * See the SampleData folder for input data format examples
+  * GPX data from different devices can be formatted uniquely, we assume formatting similar to the example .csv files in the [SampleData](./SampleData) folder 
     
 * **Preprocessing.py**
   * Preprocessing functions such as outlier sample detection, interpolation of missing datapoints, path smothing and break detection for identifying movement periods
