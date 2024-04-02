@@ -54,11 +54,6 @@ To run the predictive modeling analysis, fist instantiate your R home in the [Pr
 * **ClusteringFeats.py**
   * Features from clustering analysis using a heirarchical density-based clustering method (HDBSCAN)
 
-Grid lines are 10 meters apart <br>
-Colors represent different clusters <br>
-Opacity represents 'cluster membership probability' <br>
-<img src= '..\Figures\GIF_Squad_1_0.gif' width='700' align='center'>
-
 
 <p align="center">    
  <img src= 'Figures\GIF_Squad_1_0.gif' alt="Clustering gif" width="400" title="Clustering gif" /> <br>
