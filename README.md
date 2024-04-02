@@ -61,7 +61,7 @@ Opacity represents 'cluster membership probability' <br>
 
 
 <p align="center">    
- <img src= '..\Figures\GIF_Squad_1_0.gif' alt="Clustering gif" width="700" title="Clustering gif" /> <br>
+ <img src= 'Figures\GIF_Squad_1_0.gif' alt="Clustering gif" width="700" title="Clustering gif" /> <br>
  <em>HDBSCAN clustering in action, tick lines are 5m apart</em>
 </p>
 
