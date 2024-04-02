@@ -57,7 +57,7 @@ To run the predictive modeling analysis, fist instantiate your R home in the [Pr
 
 <p align="center">    
  <img src= 'Figures\GIF_Squad_1_0.gif' alt="Clustering gif" width="300" title="Clustering gif" /> <br>
- <em>HDBSCAN clustering in action, tick lines are 5m apart<br>Outliers are labelled cluster -1<br>plotly express doesnt allow for categorical legends in scatter animations</em>
+ <em>HDBSCAN clustering in action, tick lines are 5m apart<br>Outliers are labelled cluster -1<br>Plotly express doesn't allow for categorical legends in scatter animations</em>
 </p>
 
 * **Regularity.py**
