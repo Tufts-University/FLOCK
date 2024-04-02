@@ -53,7 +53,7 @@ To run the predictive modeling analysis, fist instantiate your R home in the [Pr
 </p>
 
 * **ClusteringFeats.py**
-  * Features from clustering analysis using a heirarchical density-based clustering method (HDBSCAN)
+  * Features from clustering analysis using a density-based clustering method (DBSCAN) and/or a heirarchical density-based clustering method (HDBSCAN)
 
 
 <p align="center">    
