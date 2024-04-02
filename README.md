@@ -46,7 +46,7 @@ To run the predictive modeling analysis, fist instantiate your R home in the [Pr
   * Feature extraction for path adapted coordinate system tranaformed data. Such as the spatial exploration index of each individual, the nearest neighbor (left/right and front/back), the length/width ratio of the group and the consistency of member positions in different movement periods
   
 * **DirectionalCorrelation.py**
-  * Directional correlation time delay leadership metrics from Nagy et. al. including the directional correlation time delay for each individual, Highly correlated segments (HCS) for each pair and directed graph representation of the directional correaltion time dealy leadership heirarchy for each movement period  
+  * Directional correlation time delay leadership metrics from [Nagy et. al.](https://www.nature.com/articles/nature08891) including the directional correlation time delay for each individual, Highly correlated segments (HCS) for each pair and directed graph representation of the directional correaltion time dealy leadership heirarchy for each movement period  
 <p align="center">  
  <img src="Figures/DirCorrFig.png" alt="Directional correlation time delay figure" width="300" title="Directional correlation leadership heirarchy" /> <br>
  <em>Leadership heirarchy from the directional correlation time delay analysis</em>
