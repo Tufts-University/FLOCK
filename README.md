@@ -65,10 +65,3 @@ To run the predictive modeling analysis, fist instantiate your R home in the [Pr
   * Movement regularity feature extraction including PACS coordinate entropy for each individual at each movement period, Vector autoregression with and without exogenous varaibles for predicability of each individual's movement over time, and entropy measures for all features that are calculated over time
   
 
-
-
-
-Tutorials
-
-SampleData
-SampleFeatures
