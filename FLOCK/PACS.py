@@ -126,7 +126,7 @@ def force_converge(t0, args4d):
 
 
 
-def PACS_transform(datasets, UTM=True):
+def PACS_transform(datasets, UTM=True, setPath=None):
     """
     Transforming group location data into a path-adapted coordinate system
 
@@ -137,11 +137,12 @@ def PACS_transform(datasets, UTM=True):
     Developed by Dr. Eric Miller and James McIntyre for CABCS at Tufts University
 
     Args:
-        datasets (list): list of dataset dfs to re-orient
-        UTM (bool, optional): True if UTM data, False if raw GPS. Defaults to True.
+        datasets (list): list of dataset DataFrames to re-orient
+        UTM (bool, optional): True if using UTM data, False if using raw lat/long. Defaults to True.
+        setPath (DataFrame, optional): DataFrame including two columns labeled either 'longitude' and 'latitude' or 'UTM_x' and 'UTM_y'. This is to be used as the set path of the group, such as a road or race route. Defaults to None.
 
     Returns:
-        oriented_datasets (list): list of PACS oriented datasets in dfs
+        oriented_datasets (list): list of PACS oriented datasets in DataFrames
     """
 
     # additional helper function
@@ -158,7 +159,7 @@ def PACS_transform(datasets, UTM=True):
     oriented_datasets = []
 
     # loop thorugh datasets
-    for im_count, dataset in enumerate(tqdm(datasets)):
+    for dataset in tqdm(datasets):
 
         # # drop all nan columns
         dataset = dataset.dropna()
@@ -166,11 +167,21 @@ def PACS_transform(datasets, UTM=True):
             print('all nans')
             continue
 
-        # choose units (UTM or coords)
-        if UTM:
-            pts = pd.concat([dataset['UTM_x'].mean(axis=1), dataset['UTM_y'].mean(axis=1)], axis=1, keys=['longitude', 'latitude']).to_numpy()
+        # if set path is defined, use that
+        if setPath:
+            # choose units (UTM or coords)
+            if UTM:
+                pts = pd.concat([setPath['UTM_x'], setPath['UTM_y']], axis=1, keys=['longitude', 'latitude']).to_numpy()
+            else:
+                pts = pd.concat([setPath['longitude'], setPath['latitude']], axis=1, keys=['longitude', 'latitude']).to_numpy()
+
+        # if no set path, use the centroid path
         else:
-            pts = pd.concat([dataset['longitude'].mean(axis=1), dataset['latitude'].mean(axis=1)], axis=1, keys=['longitude', 'latitude']).to_numpy()
+            # choose units (UTM or coords)
+            if UTM:
+                pts = pd.concat([dataset['UTM_x'].mean(axis=1), dataset['UTM_y'].mean(axis=1)], axis=1, keys=['longitude', 'latitude']).to_numpy()
+            else:
+                pts = pd.concat([dataset['longitude'].mean(axis=1), dataset['latitude'].mean(axis=1)], axis=1, keys=['longitude', 'latitude']).to_numpy()
             
         # get distance values
         distance = np.cumsum( np.sqrt(np.sum( np.diff(pts, axis=0)**2, axis=1 )) )

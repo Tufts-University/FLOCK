@@ -8,7 +8,6 @@ each individual should have a column for latitude and longitude, or UTM x and y
 
 # imports
 import os
-import gpxpy
 import pandas as pd
 
 
