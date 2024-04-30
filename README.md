@@ -71,14 +71,14 @@ Case study: During a 72 hour field study, 16 groups of soldiers complete a 'load
 * **Explanatory model**
   * Here we use all of our datapoints (16 groups) to select important features and we report the model's performance on the training data. This exploratory model achieves an R squared score of 0.82.
 <p align="center">       
- <img src="Figures/ExplanatoryModelResults.png" alt="Explanatory Model Results" width="600" title="Explanatory Model Results" /> <br>
+ <img src="Figures/ExplanatoryModelResults.png" alt="Explanatory Model Results" width="300" title="Explanatory Model Results" /> <br>
  <em>Explanatory Model Results</em>
 </p>
 
 * **Predictive model**
   * Here we employ a Leave-One-Out cross validation method, where we select features and train a new model for each iteration, then test the model on the left out datapoint. This predictive model achieves an R squared score of 0.63.
 <p align="center">       
- <img src="Figures/PredictiveModelResults.png" alt="Predictive Model Results" width="600" title="Predictive Model Results" /> <br>
+ <img src="Figures/PredictiveModelResults.png" alt="Predictive Model Results" width="300" title="Predictive Model Results" /> <br>
  <em>Predictive Model Results</em>
 </p>
 
