@@ -66,7 +66,7 @@ To run the predictive modeling analysis, fist instantiate your R home in the [Pr
  
 
 ## Predictive modelling
-Case study: During a 72 hour field study, 16 groups of soldiers complete a 'loaded ruck march' before engaging in strategic and tactical exercises the next day. During these exercises, experts score each of the groups. Our goal is to predict the score of each group from features calculated with this toolbox. To select features, we employ the [Terminating Random Experiments (TRex)](https://github.com/jasinmachkour/TRexSelector) method. We then train a linear regression model using only the selected features.
+Case study: During a 72 hour field study, 16 groups of soldiers complete a 'loaded ruck march' before engaging in strategic and tactical exercises the next day. During these exercises, experts score each of the groups. Our goal is to predict the expert's score of each group from features calculated with this toolbox during the loaded ruck march. To select features, we employ the [Terminating Random Experiments (TRex)](https://github.com/jasinmachkour/TRexSelector) method. We then train a linear regression model using only the selected features.
 
 * **Explanatory model**
   * Here we use all of our datapoints (16 groups) to select important features and we report the model's performance on the training data. This exploratory model achieves an R squared score of 0.82.
