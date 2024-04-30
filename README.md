@@ -63,5 +63,25 @@ To run the predictive modeling analysis, fist instantiate your R home in the [Pr
 
 * **Regularity.py**
   * Movement regularity feature extraction including PACS coordinate entropy for each individual at each movement period, Vector autoregression with and without exogenous varaibles for predicability of each individual's movement over time, and entropy measures for all features that are calculated over time
-  
+ 
+
+## Predictive modelling
+Case study: During a 72 hour field study, 16 groups of soldiers complete a 'loaded ruck march' before engaging in strategic and tactical exercises the next day. During these exercises, experts score each of the groups. Our goal is to predict the score of each group from features calculated with this toolbox. To select features, we employ the [Terminating Random Experiments (TRex)](https://github.com/jasinmachkour/TRexSelector) method. We then train a linear regression model using only the selected features.
+
+* **Explanatory model**
+  * Here we use all of our datapoints (16 groups) to select important features and we report the model's performance on the training data. This exploratory model achieves an R squared score of 0.82.
+<p align="center">       
+ <img src="Figures/ExplanatoryModelResults.png" alt="Explanatory Model Results" width="600" title="Explanatory Model Results" /> <br>
+ <em>Explanatory Model Results</em>
+</p>
+
+* **Predictive model**
+  * Here we employ a Leave-One-Out cross validation method, where we select features and train a new model for each iteration, then test the model on the left out datapoint. This predictive model achieves an R squared score of 0.63.
+<p align="center">       
+ <img src="Figures/PredictiveModelResults.png" alt="Predictive Model Results" width="600" title="Predictive Model Results" /> <br>
+ <em>Predictive Model Results</em>
+</p>
+
+**Why the T-rex selector?**
+Compared with a basic Least Absolute Shrinkage and Selection Operator (LASSO) feature selection method, the TRex achieves a much higher stability (i.e. the selcted features in each Leave-One-Out iteration are more similar). The LASSO struggles with wide datasets (small number of observations and large number of features), especially when there is a low sparsity (a high amount of relevant features) such as with our sample study dataset.
 
