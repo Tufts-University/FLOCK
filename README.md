@@ -17,42 +17,42 @@ To run the predictive modeling analysis, fist instantiate your R home in the [Pr
 
 ## FLOCK functions
 
-* **DataLoading.py**
+* **DataLoading.py** 
   * Functions for loading and re-formatting data from a directory of .csv files
   * See the SampleData folder for input data format examples
   * GPX data from different devices can be formatted uniquely, data is assumed to be in teh format of the example .csv files in the [SampleData](./SampleData) folder 
     
-* **Preprocessing.py**
+* **Preprocessing.py** [![View Jupyter Notebook](https://img.shields.io/badge/view-Jupyter%20notebook-lightgrey.svg)](./Tutorials/Break-Detection.ipynb)
   * Preprocessing functions such as outlier sample detection, interpolation of missing datapoints, path smothing and break detection for identifying movement periods
     
-* **VelocityFeats.py**
+* **VelocityFeats.py** [![View Jupyter Notebook](https://img.shields.io/badge/view-Jupyter%20notebook-lightgrey.svg)](./Tutorials/Velocity-Metrics.ipynb)
   * Feature extraction functions for finding the velocity of each individual over time and features related to difference in velocities across group members
   
-* **SpatialFeats.py**
+* **SpatialFeats.py** [![View Jupyter Notebook](https://img.shields.io/badge/view-Jupyter%20notebook-lightgrey.svg)](./Tutorials/Spatial-Metrics.ipynb)
   * Feature extraction functions for spatio-temporal features (spatial features over time). Such as the stretch index, convex hull surface area and voronoi spaces
 <p align="center">    
  <img src="Figures/SpatialFeatureFig.png" alt="Spatial feature figure" width="400" title="Spatial features" /> <br>
  <em>Spatial features such as distance to centroid (stretch index), convex hull surface area, and voronoi spaces</em>
 </p>
 
-* **PACS.py**
+* **PACS.py** [![View Jupyter Notebook](https://img.shields.io/badge/view-Jupyter%20notebook-lightgrey.svg)](./Tutorials/PACS-Metrics.ipynb)
   * Path-adapted coordinate system transformation
 <p align="center">       
  <img src="Figures/PACSfig.png" alt="PACS figure" width="600" title="PACS transformation" /> <br>
  <em>Path-adapted coordinate system example. The leftmost figure shows the raw path and one timepoint while the next figures show the straightened PACS path and coordinates of group members over a time-window in the PACS space.</em>
 </p>
 
-* **PacsFeats.py**
+* **PacsFeats.py** [![View Jupyter Notebook](https://img.shields.io/badge/view-Jupyter%20notebook-lightgrey.svg)](./Tutorials/PACS-Metrics.ipynb)
   * Feature extraction for path adapted coordinate system tranaformed data. Such as the spatial exploration index of each individual, the nearest neighbor (left/right and front/back), the length/width ratio of the group and the consistency of member positions in different movement periods
   
-* **DirectionalCorrelation.py**
+* **DirectionalCorrelation.py** [![View Jupyter Notebook](https://img.shields.io/badge/view-Jupyter%20notebook-lightgrey.svg)](./Tutorials/Leadership-Metrics.ipynb)
   * Directional correlation time delay leadership metrics from [Nagy et. al.](https://www.nature.com/articles/nature08891) including the directional correlation time delay for each individual, Highly correlated segments (HCS) for each pair and directed graph representation of the directional correaltion time dealy leadership heirarchy for each movement period  
 <p align="center">  
  <img src="Figures/DirCorrFig.png" alt="Directional correlation time delay figure" width="300" title="Directional correlation leadership heirarchy" /> <br>
  <em>Leadership heirarchy from the directional correlation time delay analysis</em>
 </p>
 
-* **ClusteringFeats.py**
+* **ClusteringFeats.py** [![View Jupyter Notebook](https://img.shields.io/badge/view-Jupyter%20notebook-lightgrey.svg)](./Tutorials/Clustering-Metrics.ipynb)
   * Features from clustering analysis using a density-based clustering method (DBSCAN) and/or a heirarchical density-based clustering method (HDBSCAN)
 
 
@@ -61,11 +61,11 @@ To run the predictive modeling analysis, fist instantiate your R home in the [Pr
  <em>HDBSCAN clustering in action, tick lines are 5m apart<br>Outliers are labelled cluster -1<br>Plotly express doesn't allow for categorical legends in scatter animations</em>
 </p>
 
-* **Regularity.py**
+* **Regularity.py** [![View Jupyter Notebook](https://img.shields.io/badge/view-Jupyter%20notebook-lightgrey.svg)](./Tutorials/Regularity-Metrics.ipynb)
   * Movement regularity feature extraction including PACS coordinate entropy for each individual at each movement period, Vector autoregression with and without exogenous varaibles for predicability of each individual's movement over time, and entropy measures for all features that are calculated over time
  
 
-## Predictive modelling
+## Predictive modelling [![View Jupyter Notebook](https://img.shields.io/badge/view-Jupyter%20notebook-lightgrey.svg)](./PredictiveModeling/Predictive-Modeling.ipynb)
 Case study: During a 72 hour field study, 16 groups of soldiers complete a 'loaded ruck march' before engaging in strategic and tactical exercises the next day. During these exercises, experts score each of the groups. Our goal is to predict the expert's score of each group from features calculated with this toolbox during the loaded ruck march. To select features, we employ the [Terminating Random Experiments (TRex)](https://github.com/jasinmachkour/TRexSelector) method. We then train a linear regression model using only the selected features.
 
 * **Explanatory model**
