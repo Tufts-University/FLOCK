@@ -1,5 +1,7 @@
 <h1 align="center" > FLOCK - Feature Learning of Organized Collective Kinetics </h1>
 
+APPROVED FOR PUBLIC RELEASE
+
 Welcome to the FLOCK-GPS repository
 
 The purpose of this package is to serve as a processing and feature extraction toolkit for assessing group movement dynamics from GPS location data.
