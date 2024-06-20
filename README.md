@@ -1,6 +1,7 @@
-<h1 align="center" > FLOCK - Feature Learning of Organized Collective Kinetics </h1>
+APPROVED FOR PUBLIC RELEASE: PR2024-1237
 
-APPROVED FOR PUBLIC RELEASE
+
+<h1 align="center" > FLOCK - Feature Learning of Organized Collective Kinetics </h1>
 
 Welcome to the FLOCK-GPS repository
 
@@ -86,4 +87,7 @@ Case study: During a 72 hour field study, 16 groups of soldiers complete a 'load
 
 **Why the T-rex selector?** <br>
 Compared with a basic Least Absolute Shrinkage and Selection Operator (LASSO) feature selection method, the TRex achieves a much higher stability (i.e. the selcted features in each Leave-One-Out iteration are more similar). The LASSO struggles with wide datasets (small number of observations and large number of features), especially when there is a low sparsity (a high amount of relevant features) such as with our sample study dataset.
+
+
+APPROVED FOR PUBLIC RELEASE: PR2024-1237
 
