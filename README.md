@@ -85,7 +85,7 @@ Case study: During a 72 hour field study, 16 groups of soldiers complete a 'load
  <em>Predictive Model Results</em>
 </p>
 
-**Why the T-rex selector?** <br>
+**Why the T-Rex selector?** <br>
 Compared with a basic Least Absolute Shrinkage and Selection Operator (LASSO) feature selection method, the TRex achieves a much higher stability (i.e. the selcted features in each Leave-One-Out iteration are more similar). The LASSO struggles with wide datasets (small number of observations and large number of features), especially when there is a low sparsity (a high amount of relevant features) such as with our sample study dataset.
 
 
