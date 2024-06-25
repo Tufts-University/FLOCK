@@ -3,8 +3,8 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "FLOCK"
-version = "0.0.1"
+name = "GPS_FLOCK"
+version = "0.0.12"
 authors = [
   { name="James McIntyre", email="james_mcintyre@uri.edu" },
 ]
@@ -15,8 +15,11 @@ classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
+    "Development Status :: 3 - Alpha",
 ]
+keywords = ["GPS", "Group Dynamics", "Group Movement"]
 
 [project.urls]
-Homepage = "https://github.com/Tufts-University/GPS-ruck"
-Issues = "https://github.com/Tufts-University/GPS-ruck/issues"
+Homepage = "https://github.com/Tufts-University/FLOCK"
+Issues = "https://github.com/Tufts-University/FLOCK/issues"
+
