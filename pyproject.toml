@@ -4,20 +4,40 @@ build-backend = "hatchling.build"
 
 [project]
 name = "GPS_FLOCK"
-version = "0.0.12"
+version = "0.0.15"
 authors = [
   { name="James McIntyre", email="james_mcintyre@uri.edu" },
 ]
 description = "A package for extracting metrics from group movement GPS data"
 readme = "README.md"
 requires-python = ">=3.8"
+dependencies = [
+  'scikit-learn>=1.1.2',
+  'seaborn>=0.11.2',
+  'scikit-image>=0.21.0',
+  'shapely>=2.0.0',
+  'pillow>=9.4.0',
+  'movingpandas>=0.15rc1',
+  'matplotlib>=3.4.3',
+  'pandas>=1.5.3',
+  'numpy>=1.24.4',
+  'folium>=0.14.0',
+  'statsmodels>=0.13.5',
+  'networkx>=0.13.5',
+  'tqdm>=4.64.1',
+  'scipy>=1.11.3',
+  'plotly>=5.13.0',
+  'EntropyHub>=0.2',
+  'hdbscan>=0.8.29',
+  'ipykernel>=6.27.1',
+]
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
     "Development Status :: 3 - Alpha",
 ]
-keywords = ["GPS", "Group Dynamics", "Group Movement"]
+keywords = ["GPS", "Group Dynamics", "Group Movement", "Machine Learning", "Human Performance Prediction"]
 
 [project.urls]
 Homepage = "https://github.com/Tufts-University/FLOCK"
