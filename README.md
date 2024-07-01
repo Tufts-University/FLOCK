@@ -14,7 +14,7 @@ The purpose of this package is to serve as a processing and feature extraction t
 
 `pip install FLOCK-GPS` 
 
-FLOCK-GPS for Python >= 3.7 and all its dependancies are available from PyPi
+FLOCK-GPS for Python >= 3.8 and all its dependancies are available from PyPi
 
 ### Tutorials
 
