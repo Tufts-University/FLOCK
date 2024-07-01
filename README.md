@@ -8,14 +8,23 @@ Welcome to the FLOCK-GPS repository
 The purpose of this package is to serve as a processing and feature extraction toolkit for assessing group movement dynamics from GPS location data.
 
 
-## Documentation
-Documentation can be found in the [Docs](https://github.com/Tufts-University/FLOCK/blob/main/Docs) folder of this repository
-
-
 ## Quick start
 
+### Installation
+
+`pip install FLOCK-GPS` 
+
+FLOCK-GPS for Python >= 3.7 and all its dependancies are available from PyPi
+
+### Tutorials
+
+To run tutorials, download the repository to your local storage and open the notebooks from there.
 The [tutorials](https://github.com/Tufts-University/FLOCK/blob/main/Tutorials) folder contains a walkthrough for each preprocessing and feature extraction step, while the [ExtractAllFeatures](https://github.com/Tufts-University/FLOCK/blob/main/ExtractAllFeatures.py) script shows how to combine and run all processing and extraction. 
 To run the predictive modeling analysis, fist instantiate your R home in the [Predictive-Modeling](https://github.com/Tufts-University/FLOCK/blob/main/PredictiveModeling) notebook.
+
+
+### Documentation
+Documentation can be found in the [Docs](https://github.com/Tufts-University/FLOCK/blob/main/Docs) folder of this repository. The HTML files will open in your default browser from the donloaded repository.
 
 
 ## FLOCK functions
@@ -88,6 +97,16 @@ Case study: During a 72 hour field study, 16 groups of soldiers complete a 'load
 **Why the T-Rex selector?** <br>
 Compared with a basic Least Absolute Shrinkage and Selection Operator (LASSO) feature selection method, the TRex achieves a much higher stability (i.e. the selcted features in each Leave-One-Out iteration are more similar). The LASSO struggles with wide datasets (small number of observations and large number of features), especially when there is a low sparsity (a high amount of relevant features) such as with our sample study dataset.
 
+
+## Citation information
+
+Please cite [[0]](#publications) when using FLOCK-GPS in your research and reference the appropriate release version.
+
+## Publications
+
+### About FLOCK-GPS
+
+[0]
 
 APPROVED FOR PUBLIC RELEASE: PR2024-1237
 
