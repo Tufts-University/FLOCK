@@ -107,7 +107,7 @@ Please cite [[0]](#publications) when using FLOCK-GPS in your research and refer
 
 ### About FLOCK-GPS
 
-[0]
+[0] COMING SOON
 
 APPROVED FOR PUBLIC RELEASE: PR2024-1237
 
