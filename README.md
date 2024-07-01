@@ -25,7 +25,7 @@ To run the predictive modeling analysis, fist instantiate your R home in the [Pr
 
 
 ### Documentation
-Documentation can be found in the [Docs](https://github.com/Tufts-University/FLOCK/blob/main/Docs) folder of this repository. The HTML files will open in your default browser from the donloaded repository.
+Documentation can be found in the [Docs](https://github.com/Tufts-University/FLOCK/blob/main/Docs) folder of this repository. The HTML files will open in your default browser from the downloaded repository.
 
 
 ## FLOCK functions
