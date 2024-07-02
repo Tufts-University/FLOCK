@@ -48,14 +48,14 @@ Documentation can be found in the [Docs](https://github.com/Tufts-University/FLO
  <em>Spatial features such as distance to centroid (stretch index), convex hull surface area, and voronoi spaces</em>
 </p>
 
-* **PACS.py** [![View Jupyter Notebook](https://img.shields.io/badge/view-Jupyter%20notebook-lightgrey.svg)](https://nbviewer.org/github/Tufts-University/FLOCK/blob/main/Tutorials/PACS-Metrics.ipynb)
+* **PACS.py** [![View Jupyter Notebook](https://img.shields.io/badge/view-Jupyter%20notebook-lightgrey.svg)](https://github.com/Tufts-University/FLOCK/blob/main/Tutorials/PACS-Metrics.ipynb)
   * Path-adapted coordinate system transformation
 <p align="center">       
  <img src="https://github.com/Tufts-University/FLOCK/blob/main/Figures/PACSfig.png" alt="PACS figure" width="600" title="PACS transformation" /> <br>
  <em>Path-adapted coordinate system example. The leftmost figure shows the raw path and one timepoint while the next figures show the straightened PACS path and coordinates of group members over a time-window in the PACS space.</em>
 </p>
 
-* **PacsFeats.py** [![View Jupyter Notebook](https://img.shields.io/badge/view-Jupyter%20notebook-lightgrey.svg)](https://nbviewer.org/github/Tufts-University/FLOCK/blob/main/Tutorials/PACS-Metrics.ipynb)
+* **PacsFeats.py** [![View Jupyter Notebook](https://img.shields.io/badge/view-Jupyter%20notebook-lightgrey.svg)](https://github.com/Tufts-University/FLOCK/blob/main/Tutorials/PACS-Metrics.ipynb)
   * Feature extraction for path adapted coordinate system tranaformed data. Such as the spatial exploration index of each individual, the nearest neighbor (left/right and front/back), the length/width ratio of the group and the consistency of member positions in different movement periods
   
 * **DirectionalCorrelation.py** [![View Jupyter Notebook](https://img.shields.io/badge/view-Jupyter%20notebook-lightgrey.svg)](https://nbviewer.org/github/Tufts-University/FLOCK/blob/main/Tutorials/Leadership-Metrics.ipynb)
