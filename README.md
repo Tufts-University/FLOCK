@@ -38,34 +38,34 @@ Documentation can be found in the [Docs](https://github.com/Tufts-University/FLO
 * **Preprocessing.py** [![View Jupyter Notebook](https://img.shields.io/badge/view-Jupyter%20notebook-lightgrey.svg)](https://nbviewer.org/github/Tufts-University/FLOCK/blob/main/Tutorials/Break-Detection.ipynb)
   * Preprocessing functions such as outlier sample detection, interpolation of missing datapoints, path smothing and break detection for identifying movement periods
     
-* **VelocityFeats.py** [![View Jupyter Notebook](https://img.shields.io/badge/view-Jupyter%20notebook-lightgrey.svg)](https://github.com/Tufts-University/FLOCK/blob/main/Tutorials/Velocity-Metrics.ipynb)
+* **VelocityFeats.py** [![View Jupyter Notebook](https://img.shields.io/badge/view-Jupyter%20notebook-lightgrey.svg)](https://nbviewer.org/github/Tufts-University/FLOCK/blob/main/Tutorials/Velocity-Metrics.ipynb)
   * Feature extraction functions for finding the velocity of each individual over time and features related to difference in velocities across group members
   
-* **SpatialFeats.py** [![View Jupyter Notebook](https://img.shields.io/badge/view-Jupyter%20notebook-lightgrey.svg)](https://github.com/Tufts-University/FLOCK/blob/main/Tutorials/Spatial-Metrics.ipynb)
+* **SpatialFeats.py** [![View Jupyter Notebook](https://img.shields.io/badge/view-Jupyter%20notebook-lightgrey.svg)](https://nbviewer.org/github/Tufts-University/FLOCK/blob/main/Tutorials/Spatial-Metrics.ipynb)
   * Feature extraction functions for spatio-temporal features (spatial features over time). Such as the stretch index, convex hull surface area and voronoi spaces
 <p align="center">    
  <img src="https://github.com/Tufts-University/FLOCK/blob/main/Figures/SpatialFeatureFig.png" alt="Spatial feature figure" width="400" title="Spatial features" /> <br>
  <em>Spatial features such as distance to centroid (stretch index), convex hull surface area, and voronoi spaces</em>
 </p>
 
-* **PACS.py** [![View Jupyter Notebook](https://img.shields.io/badge/view-Jupyter%20notebook-lightgrey.svg)](https://github.com/Tufts-University/FLOCK/blob/main/Tutorials/PACS-Metrics.ipynb)
+* **PACS.py** [![View Jupyter Notebook](https://img.shields.io/badge/view-Jupyter%20notebook-lightgrey.svg)](https://nbviewer.org/github/Tufts-University/FLOCK/blob/main/Tutorials/PACS-Metrics.ipynb)
   * Path-adapted coordinate system transformation
 <p align="center">       
  <img src="https://github.com/Tufts-University/FLOCK/blob/main/Figures/PACSfig.png" alt="PACS figure" width="600" title="PACS transformation" /> <br>
  <em>Path-adapted coordinate system example. The leftmost figure shows the raw path and one timepoint while the next figures show the straightened PACS path and coordinates of group members over a time-window in the PACS space.</em>
 </p>
 
-* **PacsFeats.py** [![View Jupyter Notebook](https://img.shields.io/badge/view-Jupyter%20notebook-lightgrey.svg)](https://github.com/Tufts-University/FLOCK/blob/main/Tutorials/PACS-Metrics.ipynb)
+* **PacsFeats.py** [![View Jupyter Notebook](https://img.shields.io/badge/view-Jupyter%20notebook-lightgrey.svg)](https://nbviewer.org/github/Tufts-University/FLOCK/blob/main/Tutorials/PACS-Metrics.ipynb)
   * Feature extraction for path adapted coordinate system tranaformed data. Such as the spatial exploration index of each individual, the nearest neighbor (left/right and front/back), the length/width ratio of the group and the consistency of member positions in different movement periods
   
-* **DirectionalCorrelation.py** [![View Jupyter Notebook](https://img.shields.io/badge/view-Jupyter%20notebook-lightgrey.svg)](https://github.com/Tufts-University/FLOCK/blob/main/Tutorials/Leadership-Metrics.ipynb)
+* **DirectionalCorrelation.py** [![View Jupyter Notebook](https://img.shields.io/badge/view-Jupyter%20notebook-lightgrey.svg)](https://nbviewer.org/github/Tufts-University/FLOCK/blob/main/Tutorials/Leadership-Metrics.ipynb)
   * Directional correlation time delay leadership metrics from [Nagy et. al.](https://www.nature.com/articles/nature08891) including the directional correlation time delay for each individual, Highly correlated segments (HCS) for each pair and directed graph representation of the directional correaltion time dealy leadership heirarchy for each movement period  
 <p align="center">  
  <img src="https://github.com/Tufts-University/FLOCK/blob/main/Figures/DirCorrFig.png" alt="Directional correlation time delay figure" width="300" title="Directional correlation leadership heirarchy" /> <br>
  <em>Leadership heirarchy from the directional correlation time delay analysis</em>
 </p>
 
-* **ClusteringFeats.py** [![View Jupyter Notebook](https://img.shields.io/badge/view-Jupyter%20notebook-lightgrey.svg)](https://github.com/Tufts-University/FLOCK/blob/main/Tutorials/Clustering-Metrics.ipynb)
+* **ClusteringFeats.py** [![View Jupyter Notebook](https://img.shields.io/badge/view-Jupyter%20notebook-lightgrey.svg)](https://nbviewer.org/github/Tufts-University/FLOCK/blob/main/Tutorials/Clustering-Metrics.ipynb)
   * Features from clustering analysis using a density-based clustering method (DBSCAN) and/or a heirarchical density-based clustering method (HDBSCAN)
 
 
@@ -74,7 +74,7 @@ Documentation can be found in the [Docs](https://github.com/Tufts-University/FLO
  <em>HDBSCAN clustering in action, tick lines are 5m apart<br>Outliers are labelled cluster -1<br>Plotly express doesn't allow for categorical legends in scatter animations</em>
 </p>
 
-* **Regularity.py** [![View Jupyter Notebook](https://img.shields.io/badge/view-Jupyter%20notebook-lightgrey.svg)](https://github.com/Tufts-University/FLOCK/blob/main/Tutorials/Regularity-Metrics.ipynb)
+* **Regularity.py** [![View Jupyter Notebook](https://img.shields.io/badge/view-Jupyter%20notebook-lightgrey.svg)](https://nbviewer.org/github/Tufts-University/FLOCK/blob/main/Tutorials/Regularity-Metrics.ipynb)
   * Movement regularity feature extraction including PACS coordinate entropy for each individual at each movement period, Vector autoregression with and without exogenous varaibles for predicability of each individual's movement over time, and entropy measures for all features that are calculated over time
  
 
