@@ -18,10 +18,10 @@ FLOCK-GPS for Python >= 3.8 and all its dependancies are available from PyPi
 
 ### Tutorials
 
-To run tutorials, download the repository to your local storage and open the notebooks from there.
+To run the [tutorials](https://github.com/Tufts-University/FLOCK/blob/main/Tutorials), download the repository to your local storage and open the notebooks from there.
 
 The [Tutorials](https://github.com/Tufts-University/FLOCK/blob/main/Tutorials) folder contains a walkthrough for each preprocessing and feature extraction step, while the [ExtractAllFeatures](https://github.com/Tufts-University/FLOCK/blob/main/ExtractAllFeatures.py) script shows how to combine and run all processing and extraction. 
-To run the predictive modeling analysis, fist instantiate your R home in the [Predictive-Modeling](https://github.com/Tufts-University/FLOCK/blob/main/PredictiveModeling) notebook.
+To run the predictive modeling analysis, fist instantiate your R home in the [Predictive-Modeling](https://github.com/Tufts-University/FLOCK/blob/main/PredictiveModeling/Predictive-Modeling.ipynb) notebook.
 
 
 ### Documentation
@@ -35,7 +35,7 @@ Documentation can be found in the [Docs](https://github.com/Tufts-University/FLO
   * See the SampleData folder for input data format examples
   * GPX data from different devices can be formatted uniquely, data is assumed to be in teh format of the example .csv files in the [SampleData](https://github.com/Tufts-University/FLOCK/blob/main/SampleData) folder 
     
-* **Preprocessing.py** [![View Jupyter Notebook](https://img.shields.io/badge/view-Jupyter%20notebook-lightgrey.svg)](https://github.com/Tufts-University/FLOCK/blob/main/Tutorials/Break-Detection.ipynb)
+* **Preprocessing.py** [![View Jupyter Notebook](https://img.shields.io/badge/view-Jupyter%20notebook-lightgrey.svg)](https://nbviewer.org/github/Tufts-University/FLOCK/blob/main/Tutorials/Break-Detection.ipynb)
   * Preprocessing functions such as outlier sample detection, interpolation of missing datapoints, path smothing and break detection for identifying movement periods
     
 * **VelocityFeats.py** [![View Jupyter Notebook](https://img.shields.io/badge/view-Jupyter%20notebook-lightgrey.svg)](https://github.com/Tufts-University/FLOCK/blob/main/Tutorials/Velocity-Metrics.ipynb)
