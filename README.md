@@ -21,7 +21,7 @@ FLOCK-GPS for Python >= 3.8 and all its dependancies are available from PyPi
 To run the [tutorials](https://github.com/Tufts-University/FLOCK/blob/main/Tutorials), download the repository to your local storage and open the notebooks from there.
 
 The [Tutorials](https://github.com/Tufts-University/FLOCK/blob/main/Tutorials) folder contains a walkthrough for each preprocessing and feature extraction step, while the [ExtractAllFeatures](https://github.com/Tufts-University/FLOCK/blob/main/ExtractAllFeatures.py) script shows how to combine and run all processing and extraction. 
-To run the predictive modeling analysis, fist instantiate your R home in the [Predictive-Modeling](https://github.com/Tufts-University/FLOCK/blob/main/PredictiveModeling/Predictive-Modeling.ipynb) notebook.
+To run the predictive modeling analysis, first instantiate your R home in the [Predictive-Modeling](https://github.com/Tufts-University/FLOCK/blob/main/PredictiveModeling/Predictive-Modeling.ipynb) notebook.
 
 
 ### Documentation
