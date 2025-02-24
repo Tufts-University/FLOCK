@@ -107,7 +107,7 @@ Please cite [[0]](#publications) when using FLOCK-GPS in your research and refer
 
 ### About FLOCK-GPS
 
-[0] COMING SOON
+[0] Elkin-Frankston, Seth, et al. "Beyond boundaries: a location-based toolkit for quantifying group dynamics in diverse contexts." Cognitive Research: Principles and Implications 10.1 (2025): 1-18.
 
 APPROVED FOR PUBLIC RELEASE: PR2024-1237
 
